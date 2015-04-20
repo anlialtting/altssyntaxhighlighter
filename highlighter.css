@@ -1,0 +1,28 @@
+/*
+ * Alt's Syntax Highlighter
+ * /highlighter.css
+ * Version: 2015-02-17
+ * Author: An-Li Alt Ting
+ * Email: anlialtting@gmail.com
+ */
+.highlighted_cpp{
+    tab-size:8;
+}
+.highlighted_cpp span.keywords{
+    color:darkblue;
+    font-weight:bold;
+    line-height:0px;
+}
+.highlighted_cpp span.library{
+    color:deeppink;
+}
+.highlighted_cpp span.stlcontainers{
+    color:green;
+    font-weight:bold;
+    line-height:0px;
+}
+.highlighted_cpp span.constants{
+    color:darkviolet;
+    font-weight:bold;
+    line-height:0px;
+}
