@@ -1,32 +1,25 @@
-/*
- * Alt's Syntax Highlighter
- * /highlighter.js
- * Version: 2015-03-01
- * Author: An-Li Alt Ting
- * Email: anlialtting@gmail.com
- */
-'use strict';
+'use strict'
 function htmltextencode(s){
-    var e=document.createElement('div');
-    e.appendChild(document.createTextNode(s));
-    return e.innerHTML;
+    var e=document.createElement('div')
+    e.appendChild(document.createTextNode(s))
+    return e.innerHTML
 }
 function htmltextdecode(s){
-    var e=document.createElement('div');
+    var e=document.createElement('div')
     e.innerHTML=s;
-    return e.firstChild.data;
+    return e.firstChild.data
 }
 function contain(key){
-    var bound=this.indexOf(key);
-    return bound!=-1&&this[bound]==key;
+    var bound=this.indexOf(key)
+    return bound!=-1&&this[bound]==key
 }
 function get_token(i,regex_first,regex){
     if(regex_first.test(this[i])){
-        i++;
+        i++
         while(i<this.length&&regex.test(this[i]))
-            i++;
+            i++
     }
-    return i;
+    return i
 }
 function highlight_cpp(s){
     /*
@@ -78,13 +71,13 @@ function highlight_cpp(s){
         //
         'EOF','EXIT_FAILURE','EXIT_SUCCESS','INFINITY','INT_MAX','INT_MIN','LONG_MAX','LONG_MIN','NULL',
         ];
-    var regex_operators=/[()\[\]{}<>+\-*\/%,:;?&^=!~.|]/;
-    var regex_specifier_characters_first=/[A-Za-z_]/;
-    var regex_specifier_characters=/[0-9A-Za-z_]/;
-    var regex_literal_characters_first=/[0-9]/;
-    var regex_literal_characters=/[0-9ELXelx.]/;
-    s=htmltextdecode(s);
-    var x='';
+    var regex_operators=/[()\[\]{}<>+\-*\/%,:;?&^=!~.|]/
+    var regex_specifier_characters_first=/[A-Za-z_]/
+    var regex_specifier_characters=/[0-9A-Za-z_]/
+    var regex_literal_characters_first=/[0-9]/
+    var regex_literal_characters=/[0-9ELXelx.]/
+    s=htmltextdecode(s)
+    var x=''
     /*
        define values in stack
        0 the problem
@@ -103,17 +96,17 @@ function highlight_cpp(s){
        1. stack
        2. character
      */
-    var i=0;
-    var stack=[],top_stack=0;
-    stack[top_stack++]=0;
+    var i=0
+    var stack=[],top_stack=0
+    stack[top_stack++]=0
     while(i<s.length){
         if(stack[top_stack-1]==0){
-            var last_token;
+            var last_token
             last_token=get_token.call(s,i,
-                    regex_specifier_characters_first,
-                    regex_specifier_characters);
+                regex_specifier_characters_first,
+                regex_specifier_characters)
             if(i!=last_token){
-                var token=s.substring(i,last_token);
+                var token=s.substring(i,last_token)
                 if(contain.call(stringset_keywords,token)){
                     x+='<span class="keywords">'+token+'</span>';
                 }else if(contain.call(stringset_library,token)){
@@ -131,54 +124,54 @@ function highlight_cpp(s){
                     regex_literal_characters_first,
                     regex_literal_characters);
             if(i!=last_token){
-                var token=s.substring(i,last_token);
-                x+='<span style="color:darkviolet;">'+token+'</span>';
-                i=last_token;
-                continue;
+                var token=s.substring(i,last_token)
+                x+='<span style="color:darkviolet;">'+token+'</span>'
+                i=last_token
+                continue
             }
             if(s[i]=='\\'){
-                stack[top_stack++]=1;
-                x+=htmltextencode(s[i++]);
-                continue;
+                stack[top_stack++]=1
+                x+=htmltextencode(s[i++])
+                continue
             }
             if(i+1<s.length&&s[i]=='/'&&s[i+1]=='/'){
-                stack[top_stack++]=2;
-                x+='<span style="color:gray;">'+htmltextencode(s[i++]);
-                continue;
+                stack[top_stack++]=2
+                x+='<span style="color:gray;">'+htmltextencode(s[i++])
+                continue
             }
             if(i+1<s.length&&s[i]=='/'&&s[i+1]=='*'){
-                stack[top_stack++]=3;
-                x+='<span style="color:gray;">'+htmltextencode(s[i++]);
-                continue;
+                stack[top_stack++]=3
+                x+='<span style="color:gray;">'+htmltextencode(s[i++])
+                continue
             }
             if(s[i]=='#'){
-                stack[top_stack++]=4;
-                x+='<span style="color:green;">'+htmltextencode(s[i++]);
-                continue;
+                stack[top_stack++]=4
+                x+='<span style="color:green;">'+htmltextencode(s[i++])
+                continue
             }
             if(s[i]=='\''){
-                stack[top_stack++]=5;
-                x+='<span style="color:blue;">'+htmltextencode(s[i++]);
-                continue;
+                stack[top_stack++]=5
+                x+='<span style="color:blue;">'+htmltextencode(s[i++])
+                continue
             }
             if(s[i]=='"'){
-                stack[top_stack++]=6;
-                x+='<span style="color:blue;">'+htmltextencode(s[i++]);
-                continue;
+                stack[top_stack++]=6
+                x+='<span style="color:blue;">'+htmltextencode(s[i++])
+                continue
             }
             if(regex_operators.test(s[i])){
-                x+='<span style="color:red;">'+htmltextencode(s[i++])+'</span>';
-                continue;
+                x+='<span style="color:red;">'+htmltextencode(s[i++])+'</span>'
+                continue
             }
         }else if(stack[top_stack-1]==1){
-            x+=htmltextencode(s[i++]);
-            top_stack--;
-            continue;
+            x+=htmltextencode(s[i++])
+            top_stack--
+            continue
         }else if(stack[top_stack-1]==2){
             if(s[i]=='\\'){
-                stack[top_stack++]=1;
-                x+=htmltextencode(s[i++]);
-                continue;
+                stack[top_stack++]=1
+                x+=htmltextencode(s[i++])
+                continue
             }
             if(s[i]=='\n'){
                 x+='</span>';
@@ -410,7 +403,44 @@ function highlight_html(s){
 }
 function highlight_js(s){
     var stringset_keywords=[
-        'break','case','catch','continue','debugger','default','delete','do','else','finally','for','function','if','in','instanceof','new','return','switch','this','throw','try','typeof','var','void','while','with'
+            /*
+                Following keywords are listed on:
+                https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Lexical_grammar
+            */
+            'break',
+            'case',
+            'class',
+            'catch',
+            'const',
+            'continue',
+            'debugger',
+            'default',
+            'delete',
+            'do',
+            'else',
+            'export',
+            'extends',
+            'finally',
+            'for',
+            'function',
+            'if',
+            'import',
+            'in',
+            'instanceof',
+            'let',
+            'new',
+            'return',
+            'super',
+            'switch',
+            'this',
+            'throw',
+            'try',
+            'typeof',
+            'var',
+            'void',
+            'while',
+            'with',
+            'yield',
         ];
     var stringset_library=[
         'alert',
@@ -708,13 +738,17 @@ function highlight_php(s){
     return x;
 }
 function text_border(s,overflow){
-    overflow=overflow||'auto';
-    var x='',y='';
-    var res=s.split('\n');
-    for(var i=0;i<res.length-1;i++)
-        x+='<span style="color:gray;">'+i+'</span><br>';
-    for(var i=0;i<res.length;i++)
-        y+=res[i]+'<br>';
+    var
+        x='',
+        y='',
+        res=s.split('\n')
+    overflow=overflow||'auto'
+    res.forEach(function(e,i){
+        x+='<span style="color:gray;">'+i+'</span><br>'
+    })
+    res.forEach(function(e){
+        y+=e+'<br>'
+    })
     var css_fontfamiliy=
         'font-family:'+
         '\'Monospace\','+
@@ -723,45 +757,46 @@ function text_border(s,overflow){
         '\'Bitstream Vera Sans Mono\''+
         ',\'Courier New\''+
         ',\'Courier\','+
-        '\'monospace\';';
-    var css_overflow='';
+        '\'monospace\';'
+    var css_overflow=''
     if(overflow==='auto')
-        css_overflow='overflow-x:auto;';
-    var css_pre='margin:0px;';
+        css_overflow='overflow-x:auto;'
+    var css_pre='margin:0px;'
     return'<table><tr><td style="width:12px;text-align:right;vertical-align:top;"><pre style="'+
         css_fontfamiliy+css_overflow+css_pre+'">'+x+
         '</pre><td style="padding-left:12px;"><pre style="max-width:800px;'+
-        css_fontfamiliy+css_overflow+css_pre+'">'+y+'</pre></table>';
+        css_fontfamiliy+css_overflow+css_pre+'">'+y+'</pre></table>'
 }
 function highlight_all(e){
-    e=e||document;
-    var a;
-    a=e.getElementsByClassName('highlighted_cpp');
-    for(var i=0;i<a.length;i++){
-        a[i].innerHTML=highlight_cpp(a[i].innerHTML);
-        a[i].style.visibility='visible';
+    var a,i
+    e=e||document
+    a=e.getElementsByClassName('highlighted_cpp')
+    for(i=0;i<a.length;i++){
+        a[i].innerHTML=highlight_cpp(a[i].innerHTML)
+        a[i].style.visibility='visible'
     }
-    a=e.getElementsByClassName('highlighted_html');
-    for(var i=0;i<a.length;i++){
-        a[i].innerHTML=highlight_html(a[i].innerHTML);
-        a[i].style.visibility='visible';
+    a=e.getElementsByClassName('highlighted_html')
+    for(i=0;i<a.length;i++){
+        a[i].innerHTML=highlight_html(a[i].innerHTML)
+        a[i].style.visibility='visible'
     }
-    a=e.getElementsByClassName('highlighted_js');
-    for(var i=0;i<a.length;i++){
-        a[i].innerHTML=highlight_js(a[i].innerHTML);
-        a[i].style.visibility='visible';
+    a=e.getElementsByClassName('highlighted_js')
+    for(i=0;i<a.length;i++){
+        a[i].innerHTML=highlight_js(a[i].innerHTML)
+        a[i].style.visibility='visible'
     }
-    a=e.getElementsByClassName('highlighted_php');
-    for(var i=0;i<a.length;i++){
-        a[i].innerHTML=highlight_php(a[i].innerHTML);
-        a[i].style.visibility='visible';
+    a=e.getElementsByClassName('highlighted_php')
+    for(i=0;i<a.length;i++){
+        a[i].innerHTML=highlight_php(a[i].innerHTML)
+        a[i].style.visibility='visible'
     }
 }
 function border_all(e){
-    e=e||document;
-    var a=e.getElementsByClassName('bordered');
-    for(var i=0;i<a.length;i++){
-        a[i].innerHTML=text_border(a[i].innerHTML,'auto');
-        a[i].style.visibility='visible';
+    var a,i
+    e=e||document
+    a=e.getElementsByClassName('bordered')
+    for(i=0;i<a.length;i++){
+        a[i].innerHTML=text_border(a[i].innerHTML)
+        a[i].style.visibility='visible'
     }
 }
