@@ -1,12 +1,6 @@
-/*
- * Alt's Syntax Highlighter
- * /highlighter.css
- * Version: 2015-02-17
- * Author: An-Li Alt Ting
- * Email: anlialtting@gmail.com
- */
 .highlighted_cpp{
-    tab-size:8;
+    tab-size:4;
+    line-height:12pt;
 }
 .highlighted_cpp span.keywords{
     color:darkblue;

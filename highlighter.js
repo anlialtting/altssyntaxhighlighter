@@ -1,4 +1,8 @@
-'use strict'
+!function(){
+window.altsSyntaxHighlighter={
+    highlight_all:highlight_all,
+    border_all:border_all,
+}
 function htmltextencode(s){
     var e=document.createElement('div')
     e.appendChild(document.createTextNode(s))
@@ -764,7 +768,7 @@ function text_border(s,overflow){
     var css_pre='margin:0px;'
     return'<table><tr><td style="width:12px;text-align:right;vertical-align:top;"><pre style="'+
         css_fontfamiliy+css_overflow+css_pre+'">'+x+
-        '</pre><td style="padding-left:12px;"><pre style="max-width:800px;'+
+        '</pre><td style="padding-left:12px;"><pre style="'+
         css_fontfamiliy+css_overflow+css_pre+'">'+y+'</pre></table>'
 }
 function highlight_all(e){
@@ -800,3 +804,4 @@ function border_all(e){
         a[i].style.visibility='visible'
     }
 }
+}()
