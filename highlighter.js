@@ -164,7 +164,9 @@ function highlight_cpp(s){
                 continue
             }
             if(regex_operators.test(s[i])){
-                x+='<span style="color:red;">'+htmltextencode(s[i++])+'</span>'
+                x+='<span style="color:red;">'+
+                    htmltextencode(s[i++])+
+                '</span>'
                 continue
             }
         }else if(stack[top_stack-1]==1){
@@ -741,7 +743,74 @@ function highlight_php(s){
     }
     return x;
 }
-function text_border(s,overflow){
+function text_border(s){
+    var
+        countOfLines,
+        logCountOfLines
+    countOfLines=s.split('\n').length
+    logCountOfLines=Math.floor(Math.round(
+        Math.log(countOfLines)/Math.log(10)*1e6
+    )/1e6)
+    return(
+        '<div style="position:relative;">'+
+            '<div>'+
+                table(true).outerHTML+
+            '</div>'+
+            '<div style="width:100%;position:absolute;top:0px;">'+
+                table(false).outerHTML+
+            '</div>'+
+        '</div>'
+    )
+    function table(isShowLineNumbers){
+        var
+            table
+        table=document.createElement('table')
+        table.style.tableLayout='fixed'
+        table.style.width='100%'
+        s.split('\n').forEach(function(e,i){
+            table.appendChild(tr(i,e,isShowLineNumbers))
+        })
+        return table
+    }
+    function tr(i,s,isShowLineNumbers){
+        var
+            tr
+        tr=document.createElement('tr')
+        tr.appendChild(td_lineNumber(i,isShowLineNumbers))
+        tr.appendChild(td_content(s,isShowLineNumbers))
+        return tr
+    }
+    function td_lineNumber(i,isShowLineNumbers){
+        var
+            td
+        td=document.createElement('td')
+        td.style.textAlign='right'
+        td.style.fontFamily='monospace'
+        td.style.color='gray'
+        td.style.verticalAlign='top'
+        td.style.width=6*(logCountOfLines+1)+'pt'
+        td.style.height='12pt'
+        if(isShowLineNumbers)
+            td.innerText=i+1
+        return td
+    }
+    function td_content(s,isShowLineNumbers){
+        var
+            td
+        td=document.createElement('td')
+        td.style.fontFamily='monospace'
+        td.style.overflowX='visible'
+        td.style.maxWidth='100%'
+        td.style.whiteSpace='pre-wrap'
+        td.style.wordWrap='break-word'
+        td.innerHTML=isShowLineNumbers?
+            '<span style="visibility:hidden;">'+s+'</span>'
+        :
+            s
+        return td
+    }
+}
+/*function text_border(s,overflow){
     var
         x='',
         y='',
@@ -751,7 +820,7 @@ function text_border(s,overflow){
         x+='<span style="color:gray;">'+i+'</span><br>'
     })
     res.forEach(function(e){
-        y+=e+'<br>'
+        y+=e+'\n'
     })
     var css_fontfamiliy=
         'font-family:'+
@@ -766,11 +835,11 @@ function text_border(s,overflow){
     if(overflow==='auto')
         css_overflow='overflow-x:auto;'
     var css_pre='margin:0px;'
-    return'<table><tr><td style="width:12px;text-align:right;vertical-align:top;"><pre style="'+
+    return'<table><tr><td style=""><pre style="'+
         css_fontfamiliy+css_overflow+css_pre+'">'+x+
-        '</pre><td style="padding-left:12px;"><pre style="'+
+        '</pre><td style="padding-left:12px;"><pre style="word-wrap:break-word;white-space:pre-wrap;'+
         css_fontfamiliy+css_overflow+css_pre+'">'+y+'</pre></table>'
-}
+}*/
 function highlight_all(e){
     var a,i
     e=e||document
