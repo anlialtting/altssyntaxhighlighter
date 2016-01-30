@@ -791,7 +791,7 @@ function text_border(s){
         td.style.width=6*(logCountOfLines+1)+'pt'
         td.style.height='12pt'
         if(isShowLineNumbers)
-            td.innerText=i+1
+            td.textContent=i+1
         return td
     }
     function td_content(s,isShowLineNumbers){
