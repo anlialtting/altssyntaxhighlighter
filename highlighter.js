@@ -801,7 +801,7 @@ function text_border(s){
         td.style.fontFamily='monospace'
         td.style.overflowX='visible'
         td.style.maxWidth='100%'
-        td.style.whiteSpace='pre-wrap'
+        td.style.whiteSpace='pre'
         td.style.wordWrap='break-word'
         td.innerHTML=isShowLineNumbers?
             '<span style="visibility:hidden;">'+s+'</span>'
@@ -810,36 +810,6 @@ function text_border(s){
         return td
     }
 }
-/*function text_border(s,overflow){
-    var
-        x='',
-        y='',
-        res=s.split('\n')
-    overflow=overflow||'auto'
-    res.forEach(function(e,i){
-        x+='<span style="color:gray;">'+i+'</span><br>'
-    })
-    res.forEach(function(e){
-        y+=e+'\n'
-    })
-    var css_fontfamiliy=
-        'font-family:'+
-        '\'Monospace\','+
-        '\'Consolas\','+
-        '\'Monaco\','+
-        '\'Bitstream Vera Sans Mono\''+
-        ',\'Courier New\''+
-        ',\'Courier\','+
-        '\'monospace\';'
-    var css_overflow=''
-    if(overflow==='auto')
-        css_overflow='overflow-x:auto;'
-    var css_pre='margin:0px;'
-    return'<table><tr><td style=""><pre style="'+
-        css_fontfamiliy+css_overflow+css_pre+'">'+x+
-        '</pre><td style="padding-left:12px;"><pre style="word-wrap:break-word;white-space:pre-wrap;'+
-        css_fontfamiliy+css_overflow+css_pre+'">'+y+'</pre></table>'
-}*/
 function highlight_all(e){
     var a,i
     e=e||document
