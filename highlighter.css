@@ -1,3 +1,6 @@
+.bordered{
+    word-break:break-all;
+}
 .highlighted_cpp{
     tab-size:4;
     line-height:12pt;
