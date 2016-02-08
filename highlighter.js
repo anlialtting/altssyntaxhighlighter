@@ -1,7 +1,7 @@
 !function(){
 window.altsSyntaxHighlighter={
-    highlight_all:highlight_all,
-    border_all:border_all,
+    highlight_all,
+    border_all
 }
 function htmltextencode(s){
     var e=document.createElement('div')
@@ -747,27 +747,28 @@ function text_border(s){
     var
         countOfLines,
         logCountOfLines
-    countOfLines=s.split('\n').length
+    countOfLines=s.split('\n').length-1
     logCountOfLines=Math.floor(Math.round(
         Math.log(countOfLines)/Math.log(10)*1e6
     )/1e6)
-    return(
-        '<div style="position:relative;">'+
-            '<div>'+
-                table(true).outerHTML+
-            '</div>'+
-            '<div style="width:100%;position:absolute;top:0px;">'+
-                table(false).outerHTML+
-            '</div>'+
-        '</div>'
-    )
+    return`
+        <div style="position:relative;">
+            <div>
+                ${table(true).outerHTML}
+            </div>
+            <div style="position:absolute;top:0px;">
+                ${table(false).outerHTML}
+            </div>
+        </div>
+    `
     function table(isShowLineNumbers){
         var
-            table
+            table,
+            lines
         table=document.createElement('table')
-        table.style.tableLayout='fixed'
-        table.style.width='100%'
-        s.split('\n').forEach(function(e,i){
+        lines=s.split('\n')
+        lines.pop()
+        lines.forEach(function(e,i){
             table.appendChild(tr(i,e,isShowLineNumbers))
         })
         return table
@@ -784,12 +785,8 @@ function text_border(s){
         var
             td
         td=document.createElement('td')
-        td.style.textAlign='right'
-        td.style.fontFamily='monospace'
-        td.style.color='gray'
-        td.style.verticalAlign='top'
+        td.className='lineNumber'
         td.style.width=6*(logCountOfLines+1)+'pt'
-        td.style.height='12pt'
         if(isShowLineNumbers)
             td.textContent=i+1
         return td
@@ -798,11 +795,7 @@ function text_border(s){
         var
             td
         td=document.createElement('td')
-        td.style.fontFamily='monospace'
-        td.style.overflowX='visible'
-        td.style.maxWidth='100%'
-        td.style.whiteSpace='pre'
-        td.style.wordWrap='break-word'
+        td.className='content'
         td.innerHTML=isShowLineNumbers?
             '<span style="visibility:hidden;">'+s+'</span>'
         :
@@ -816,22 +809,22 @@ function highlight_all(e){
     a=e.getElementsByClassName('highlighted_cpp')
     for(i=0;i<a.length;i++){
         a[i].innerHTML=highlight_cpp(a[i].innerHTML)
-        a[i].style.visibility='visible'
+        a[i].style.visibility=''
     }
     a=e.getElementsByClassName('highlighted_html')
     for(i=0;i<a.length;i++){
         a[i].innerHTML=highlight_html(a[i].innerHTML)
-        a[i].style.visibility='visible'
+        a[i].style.visibility=''
     }
     a=e.getElementsByClassName('highlighted_js')
     for(i=0;i<a.length;i++){
         a[i].innerHTML=highlight_js(a[i].innerHTML)
-        a[i].style.visibility='visible'
+        a[i].style.visibility=''
     }
     a=e.getElementsByClassName('highlighted_php')
     for(i=0;i<a.length;i++){
         a[i].innerHTML=highlight_php(a[i].innerHTML)
-        a[i].style.visibility='visible'
+        a[i].style.visibility=''
     }
 }
 function border_all(e){
@@ -840,7 +833,7 @@ function border_all(e){
     a=e.getElementsByClassName('bordered')
     for(i=0;i<a.length;i++){
         a[i].innerHTML=text_border(a[i].innerHTML)
-        a[i].style.visibility='visible'
+        a[i].style.visibility=''
     }
 }
 }()

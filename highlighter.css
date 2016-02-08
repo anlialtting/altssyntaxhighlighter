@@ -1,6 +1,22 @@
 .bordered{
     word-break:break-all;
 }
+.bordered table{
+    table-layout:fixed;
+    width:100%;
+}
+.bordered td.lineNumber{
+    text-align:right;
+    font-family:monospace;
+    color:gray;
+    vertical-align:top;
+    height:12pt;
+}
+.bordered td.content{
+    white-space:pre;
+    word-wrap:break-word;
+    font-family:monospace;
+}
 .highlighted_cpp{
     tab-size:4;
     line-height:12pt;
