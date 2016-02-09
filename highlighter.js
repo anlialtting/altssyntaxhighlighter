@@ -1,8 +1,10 @@
-!function(){
-window.altsSyntaxHighlighter={
+(()=>{
+window.syntaxHighlighter={
     highlight_all,
     border_all
 }
+/*loadScript.directoryOfThisScript=
+    document.currentScript.src.replace(/[^\/]*$/,'')*/
 function htmltextencode(s){
     var e=document.createElement('div')
     e.appendChild(document.createTextNode(s))
@@ -10,7 +12,7 @@ function htmltextencode(s){
 }
 function htmltextdecode(s){
     var e=document.createElement('div')
-    e.innerHTML=s;
+    e.innerHTML=s
     return e.firstChild.data
 }
 function contain(key){
@@ -768,7 +770,7 @@ function text_border(s){
         table=document.createElement('table')
         lines=s.split('\n')
         lines.pop()
-        lines.forEach(function(e,i){
+        lines.forEach((e,i)=>{
             table.appendChild(tr(i,e,isShowLineNumbers))
         })
         return table
@@ -836,4 +838,4 @@ function border_all(e){
         a[i].style.visibility=''
     }
 }
-}()
+})()
