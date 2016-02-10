@@ -36,7 +36,10 @@ function requireScript(path,callback){
     requireScript.loadedScripts=requireScript.loadedScripts||{}
     if(requireScript.loadedScripts[path])
         return callback(null)
-    evalScript(path,callback)
+    evalScript(path,()=>{
+        requireScript.loadedScripts[path]=true
+        callback(null)
+    })
 }
 function requireScripts(path,callback){
     var countdownToCallback
