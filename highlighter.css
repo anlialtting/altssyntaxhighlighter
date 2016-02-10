@@ -60,3 +60,6 @@
 .highlighted_cpp span.singleLineComment{
     color:gray;
 }
+.highlighted_cpp span.includePI{
+    color:darkred;
+}

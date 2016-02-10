@@ -1,5 +1,6 @@
 (()=>{
 window.syntaxHighlighter={
+    get,
     htmltextencode,
     htmltextdecode,
     contain,
@@ -10,6 +11,16 @@ window.syntaxHighlighter={
 }
 evalScript.directoryOfThisScript=
     document.currentScript.src.replace(/[^\/]*$/,'')
+function get(path,callback){
+    var request=new XMLHttpRequest
+    request.onreadystatechange=()=>{
+        if(request.readyState===4&&request.status===200){
+            callback&&callback(null,request.responseText)
+        }
+    }
+    request.open('GET',evalScript.directoryOfThisScript+path)
+    request.send()
+}
 function evalScript(path,callback){
     var request=new XMLHttpRequest
     request.onreadystatechange=()=>{
@@ -148,17 +159,23 @@ function highlight_all(e,cb){
     requireScript('highlightCpp.js',()=>{
         var a,i
         a=e.getElementsByClassName('highlighted_cpp')
-        for(i=0;i<a.length;i++){
-            a[i].innerHTML=syntaxHighlighter.highlightCpp(a[i].textContent)
-            a[i].style.visibility=''
-        }
+        countdownToCallback.count+=a.length
+        for(i=0;i<a.length;i++)(e=>{
+            syntaxHighlighter.highlightCpp(e.textContent,(err,res)=>{
+                e.innerHTML=res
+                e.style.visibility=''
+                countdownToCallback()
+            })
+        })(a[i])
         countdownToCallback()
     })
     requireScript('langHtml.js',()=>{
         var a,i
         a=e.getElementsByClassName('highlighted_html')
         for(i=0;i<a.length;i++){
-            a[i].innerHTML=syntaxHighlighter.highlight_html(a[i].textContent)
+            a[i].innerHTML=syntaxHighlighter.highlight_html(
+                a[i].textContent
+            )
             a[i].style.visibility=''
         }
         countdownToCallback()
@@ -167,7 +184,9 @@ function highlight_all(e,cb){
         var a,i
         a=e.getElementsByClassName('highlighted_js')
         for(i=0;i<a.length;i++){
-            a[i].innerHTML=syntaxHighlighter.highlight_js(a[i].textContent)
+            a[i].innerHTML=syntaxHighlighter.highlight_js(
+                a[i].textContent
+            )
             a[i].style.visibility=''
         }
         countdownToCallback()
@@ -176,7 +195,9 @@ function highlight_all(e,cb){
         var a,i
         a=e.getElementsByClassName('highlighted_php')
         for(i=0;i<a.length;i++){
-            a[i].innerHTML=syntaxHighlighter.highlight_php(a[i].textContent)
+            a[i].innerHTML=syntaxHighlighter.highlight_php(
+                a[i].textContent
+            )
             a[i].style.visibility=''
         }
     })
