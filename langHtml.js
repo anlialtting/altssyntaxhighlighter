@@ -14,7 +14,7 @@ function highlight_html(s){
     var regex_specifier_characters=/[0-9A-Za-z_-]/;
     var regex_literal_characters_first=/[0-9]/;
     var regex_literal_characters=/[0-9ELXelx.]/;
-    s=syntaxHighlighter.htmltextdecode(s);
+    //s=syntaxHighlighter.htmltextdecode(s);
     var x='';
     /*
        define values in stack

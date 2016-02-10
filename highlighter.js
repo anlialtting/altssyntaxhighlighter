@@ -4,6 +4,7 @@ window.syntaxHighlighter={
     htmltextdecode,
     contain,
     get_token,
+    getToken,
     highlight_all,
     border_all
 }
@@ -63,6 +64,14 @@ function contain(key){
     return bound!=-1&&this[bound]==key
 }
 function get_token(i,regex_first,regex){
+    if(regex_first.test(this[i])){
+        i++
+        while(i<this.length&&regex.test(this[i]))
+            i++
+    }
+    return i
+}
+function getToken(s,regex_first,regex){
     if(regex_first.test(this[i])){
         i++
         while(i<this.length&&regex.test(this[i]))
@@ -133,11 +142,11 @@ function text_border(s){
 function highlight_all(e,cb){
     e=e||document
     countdownToCallback.count=4
-    requireScript('langCpp.js',()=>{
+    requireScript('highlightCpp.js',()=>{
         var a,i
         a=e.getElementsByClassName('highlighted_cpp')
         for(i=0;i<a.length;i++){
-            a[i].innerHTML=syntaxHighlighter.highlight_cpp(a[i].innerHTML)
+            a[i].innerHTML=syntaxHighlighter.highlightCpp(a[i].textContent)
             a[i].style.visibility=''
         }
         countdownToCallback()
@@ -146,7 +155,7 @@ function highlight_all(e,cb){
         var a,i
         a=e.getElementsByClassName('highlighted_html')
         for(i=0;i<a.length;i++){
-            a[i].innerHTML=syntaxHighlighter.highlight_html(a[i].innerHTML)
+            a[i].innerHTML=syntaxHighlighter.highlight_html(a[i].textContent)
             a[i].style.visibility=''
         }
         countdownToCallback()
@@ -155,7 +164,7 @@ function highlight_all(e,cb){
         var a,i
         a=e.getElementsByClassName('highlighted_js')
         for(i=0;i<a.length;i++){
-            a[i].innerHTML=syntaxHighlighter.highlight_js(a[i].innerHTML)
+            a[i].innerHTML=syntaxHighlighter.highlight_js(a[i].textContent)
             a[i].style.visibility=''
         }
         countdownToCallback()
@@ -164,7 +173,7 @@ function highlight_all(e,cb){
         var a,i
         a=e.getElementsByClassName('highlighted_php')
         for(i=0;i<a.length;i++){
-            a[i].innerHTML=syntaxHighlighter.highlight_php(a[i].innerHTML)
+            a[i].innerHTML=syntaxHighlighter.highlight_php(a[i].textContent)
             a[i].style.visibility=''
         }
     })

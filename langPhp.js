@@ -17,7 +17,7 @@ function highlight_php(s){
     var regex_literal_characters=/[0-9ELXelx.]/;
     var regex_variable_characters_first=/[$]/;
     var regex_variable_characters=/[0-9A-Za-z_]/;
-    s=syntaxHighlighter.htmltextdecode(s);
+    //s=syntaxHighlighter.htmltextdecode(s);
     var x='';
     /*
        define values in stack

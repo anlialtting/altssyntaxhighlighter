@@ -39,3 +39,24 @@
     font-weight:bold;
     line-height:0px;
 }
+.highlighted_cpp span.number{
+    color:darkviolet;
+}
+.highlighted_cpp span.preprocessorInstruction{
+    color:green;
+}
+.highlighted_cpp span.operators{
+    color:red;
+}
+.highlighted_cpp span.characterLiteral{
+    color:blue;
+}
+.highlighted_cpp span.cStringLiteral{
+    color:blue;
+}
+.highlighted_cpp span.multiLineComment{
+    color:gray;
+}
+.highlighted_cpp span.singleLineComment{
+    color:gray;
+}
