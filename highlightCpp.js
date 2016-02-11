@@ -5,6 +5,59 @@ var
     regexOfSpecifier=/^[A-Za-z_][0-9A-Za-z_]*/,
     regexOfNumberLiteral=/^[0-9][0-9ELXelx.]*/
 syntaxHighlighter.highlightCpp=highlightCpp
+function _highlightCpp(sourceFile,cb){
+    cb(null,highlight(analyze(sourceFile)))
+    function analyze(sourceFile){
+        var
+            result=[]
+        a=sourceFile.split('\\\n')
+        b=analyze0(a.join(''))
+        a=a.map(s=>s.length)
+        a.pop()
+        while(a.length&&b.length){
+            if(typeof b[0]!='string'){
+                result.push(b.shift())
+                continue
+            }
+            if(a[0]<b[0].length){
+                result.push(b[0].substring(0,a[0]))
+                result.push(new DeletedNewline)
+                b[0]=b[0].substring(a[0])
+                a.shift()
+            }else{
+                result.push(b[0])
+                a[0]-=b[0].length
+                b.shift()
+            }
+        }
+        while(a.length){
+            result.push(new DeletedNewline)
+            a.shift()
+        }
+        while(b.length){
+            result.push(b[0])
+            b.shift()
+        }
+        return result
+    }
+    function analyze0(sourceFile){
+        var a=sourceFile.split('\n').map(s=>s+'\n')
+        a.pop()
+        return a
+    }
+    function highlight(list){
+        var result=''
+        list.forEach(item=>{
+            if(typeof item=='string')
+                result+=syntaxHighlighter.htmltextencode(item)
+            if(item instanceof DeletedNewline)
+                result+='<span style="color:green">\\\n</span>'
+        })
+        return result
+    }
+    function DeletedNewline(){
+    }
+}
 function highlightCpp(code,cb){
     var
         input=code,
@@ -91,7 +144,6 @@ function highlightCpp(code,cb){
             tryHighlightSingleLineComment()||
             tryHighlightMultiLineComment()||
             tryHighlightIgnoredNewlineCharacter()||
-            tryDehighlightNewlineCharacter()||
             tryHighlightSingleCharacter()
         ));
         output+='</span>'
@@ -110,7 +162,6 @@ function highlightCpp(code,cb){
             tryHighlightSingleLineComment()||
             tryHighlightMultiLineComment()||
             tryHighlightIgnoredNewlineCharacter()||
-            tryDehighlightNewlineCharacter()||
             tryHighlightSingleCharacter()
         ));
         output+='</span>'
@@ -125,7 +176,6 @@ function highlightCpp(code,cb){
         output+='<span class="singleLineComment">'
         while(input[0]!='\n'&&(
             tryHighlightIgnoredNewlineCharacter()||
-            tryDehighlightNewlineCharacter()||
             tryHighlightSingleCharacter()
         ));
         output+='</span>'
@@ -144,7 +194,6 @@ function highlightCpp(code,cb){
                 highlightSingleCharacter()
                 break
             }
-            tryDehighlightNewlineCharacter()||
             tryHighlightSingleCharacter()
         }
         output+='</span>'
@@ -220,57 +269,7 @@ function highlightCpp(code,cb){
     }
     function highlightIgnoredNewlineCharacter(){
         highlightSingleCharacter()
-        dehighlightNewlineCharacter()
-    }
-    function tryDehighlightNewlineCharacter(){
-        if(input[0]!='\n')
-            return
-        dehighlightNewlineCharacter()
-        return true
-    }
-    function dehighlightNewlineCharacter(){
-        var
-            traveler=arguments.callee,
-            ancestors=[],
-            openers=[]
-        while(traveler.name!='highlightCppCode'){
-            if(/^highlight/.test(traveler.name))
-                ancestors.push(traveler.name)
-            traveler=traveler.caller
-        }
-        output+=ancestors.map(functionName=>{
-            if([
-                'highlightOperators',
-                'highlightNumberLiteral',
-                'highlightCharacterLiteral',
-                'highlightCStringLiteral',
-                'highlightMultiLineComment',
-                'highlightSingleLineComment',
-                'highlightPreprocessorInstruction',
-            ].indexOf(functionName)!=-1)
-                return'</span>'
-            return''
-        }).join('')
-        output+=syntaxHighlighter.htmltextencode(input[0])
-        input=input.substring(1)
-        ancestors.reverse()
-        output+=ancestors.map(functionName=>{
-            if(functionName=='highlightOperators')
-                return'<span class="operators">'
-            if(functionName=='highlightNumberLiteral')
-                return'<span class="number">'
-            if(functionName=='highlightCharacterLiteral')
-                return'<span class="characterLiteral">'
-            if(functionName=='highlightCStringLiteral')
-                return'<span class="cStringLiteral">'
-            if(functionName=='highlightMultiLineComment')
-                return'<span class="multiLineComment">'
-            if(functionName=='highlightSingleLineComment')
-                return'<span class="singleLineComment">'
-            if(functionName=='highlightPreprocessorInstruction')
-                return'<span class="preprocessorInstruction">'
-            return''
-        }).join('')
+        highlightSingleCharacter()
     }
 }
 })()

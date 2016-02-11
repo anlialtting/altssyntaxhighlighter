@@ -33,13 +33,8 @@ function evalScript(path,callback){
 }
 function htmltextencode(s){
     var e=document.createElement('div')
-    e.appendChild(document.createTextNode(s))
+    e.textContent=s
     return e.innerHTML
-}
-function htmltextdecode(s){
-    var e=document.createElement('div')
-    e.innerHTML=s
-    return e.firstChild.data
 }
 function get_token(i,regex_first,regex){
     if(regex_first.test(this[i])){
@@ -53,6 +48,7 @@ function text_border(s){
     var
         countOfLines,
         logCountOfLines
+    s=splitSourceByNewlineCharacter(s)
     countOfLines=s.split('\n').length-1
     logCountOfLines=Math.floor(Math.round(
         Math.log(countOfLines)/Math.log(10)*1e6
@@ -67,6 +63,30 @@ function text_border(s){
             </div>
         </div>
     `
+    function splitSourceByNewlineCharacter(source){
+        var
+            result='',
+            div=document.createElement('div'),
+            i
+        div.innerHTML=source
+        for(i=0;i<div.childNodes.length;i++)(node=>{
+            if(node.nodeType==Node.TEXT_NODE)
+                result+=(s=>{
+                    var div=document.createElement('div')
+                    div.textContent=s
+                    return div.innerHTML
+                })(node.wholeText)
+            if(node.nodeType==Node.ELEMENT_NODE){
+                result+=splitSourceByNewlineCharacter(
+                    node.innerHTML
+                ).split('\n').map(s=>(
+                    node.innerHTML=s,
+                    node.outerHTML
+                )).join('\n')
+            }
+        })(div.childNodes[i])
+        return result
+    }
     function table(isShowLineNumbers){
         var
             table,
