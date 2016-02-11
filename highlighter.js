@@ -69,22 +69,21 @@ function text_border(s){
             div=document.createElement('div'),
             i
         div.innerHTML=source
-        for(i=0;i<div.childNodes.length;i++)(node=>{
-            if(node.nodeType==Node.TEXT_NODE)
-                result+=(s=>{
+        for(i=0;i<div.childNodes.length;i++)(node=>
+            result+=node.nodeType==Node.TEXT_NODE?
+                (s=>{
                     var div=document.createElement('div')
                     div.textContent=s
                     return div.innerHTML
                 })(node.wholeText)
-            if(node.nodeType==Node.ELEMENT_NODE){
-                result+=splitSourceByNewlineCharacter(
+            :
+                splitSourceByNewlineCharacter(
                     node.innerHTML
                 ).split('\n').map(s=>(
                     node.innerHTML=s,
                     node.outerHTML
                 )).join('\n')
-            }
-        })(div.childNodes[i])
+        )(div.childNodes[i])
         return result
     }
     function table(isShowLineNumbers){
