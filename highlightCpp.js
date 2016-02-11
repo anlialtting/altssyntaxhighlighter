@@ -1,17 +1,16 @@
 (()=>{
 var
-    data={},
-    onDataLoad={},
-    dataStatus={},
+    db=new syntaxHighlighter.Database('cpp'),
     regexOfOperators=/[()\[\]{}<>+\-*\/%,:;?&^=!~.|]/,
     regexOfSpecifier=/^[A-Za-z_][0-9A-Za-z_]*/,
     regexOfNumberLiteral=/^[0-9][0-9ELXelx.]*/
-window.syntaxHighlighter.highlightCpp=highlightCpp
+syntaxHighlighter.highlightCpp=highlightCpp
 function highlightCpp(code,cb){
     var
         input=code,
-        output=''
-    requireData([
+        output='',
+        data=db.data
+    db.require([
         'keywords',
         'library',
         'stlcontainers',
@@ -273,38 +272,5 @@ function highlightCpp(code,cb){
             return''
         }).join('')
     }
-}
-function dataLoad(name){
-    onDataLoad[name].forEach(cb=>{
-        cb(null)
-    })
-    onDataLoad[name]=[]
-}
-function requireDatum(name,cb){
-    dataStatus[name]=dataStatus[name]||0
-    if(dataStatus[name]==0){
-        dataStatus[name]=1
-        syntaxHighlighter.get(`cpp/${name}.json`,(err,res)=>{
-            dataStatus[name]=2
-            data[name]=JSON.parse(res)
-            dataLoad(name)
-        })
-    }
-    if(dataStatus[name]==1){
-        onDataLoad[name]=onDataLoad[name]||[]
-        onDataLoad[name].push(cb)
-        return
-    }
-    return cb(null)
-}
-function requireData(names,cb){
-    var countdownToCb=names.length
-    names.forEach(name=>{
-        requireDatum(name,()=>{
-            if(--countdownToCb)
-                return
-            cb(null)
-        })
-    })
 }
 })()

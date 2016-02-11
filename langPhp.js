@@ -46,13 +46,13 @@ function highlight_php(s){
                     regex_specifier_characters);
             if(i!=last_token){
                 var token=s.substring(i,last_token);
-                if(syntaxHighlighter.contain.call(stringset_keywords,token)){
+                if(stringset_keywords.indexOf(token)!=-1){
                     x+='<span style="color:darkblue;"><b>'+token+'</b></span>';
-                }else if(syntaxHighlighter.contain.call(stringset_library,token)){
+                }else if(stringset_library.indexOf(token)!=-1){
                     x+='<span style="color:deeppink;">'+token+'</span>';
-                }else if(syntaxHighlighter.contain.call(stringset_stlcontainers,token)){
+                }else if(stringset_stlcontainers.indexOf(token)!=-1){
                     x+='<span style="color:limegreen;"><b>'+token+'</b></span>';
-                }else if(syntaxHighlighter.contain.call(stringset_constants,token)){
+                }else if(stringset_constants.indexOf(token)!=-1){
                     x+='<span style="color:darkviolet;"><b>'+token+'</b></span>';
                 }else
                     x+=token;

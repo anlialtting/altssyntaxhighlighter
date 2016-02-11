@@ -39,18 +39,18 @@ function highlight_html(s){
                     regex_specifier_characters);
             if(i!=last_token){
                 var token=s.substring(i,last_token);
-                if(syntaxHighlighter.contain.call(stringset_tags,token)){
+                if(stringset_tags.indexOf(token)!=-1){
                     x+='<span style="color:darkblue;"><b>'+token+'</b></span>';
-                }else if(syntaxHighlighter.contain.call(stringset_properties,token)){
+                }else if(stringset_properties.indexOf(token)!=-1){
                     x+='<span style="color:deeppink;">'+token+'</span>';
-                }else if(syntaxHighlighter.contain.call(stringset_stlcontainers,token)){
+                }else if(stringset_stlcontainers.indexOf(token)!=-1){
                     x+='<span style="color:limegreen;"><b>'+token+'</b></span>';
-                }else if(syntaxHighlighter.contain.call(stringset_constants,token)){
+                }else if(stringset_constants.indexOf(token)!=-1){
                     x+='<span style="color:darkviolet;"><b>'+token+'</b></span>';
                 }else
-                    x+=token;
-                i=last_token;
-                continue;
+                    x+=token
+                i=last_token
+                continue
             }
             last_token=syntaxHighlighter.get_token.call(s,i,
                     regex_literal_characters_first,

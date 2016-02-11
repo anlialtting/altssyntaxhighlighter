@@ -1,16 +1,15 @@
 (()=>{
+var
+    directoryOfThisScript=
+        document.currentScript.src.replace(/[^\/]*$/,''),
+    modules=new Cache(evalScript)
 window.syntaxHighlighter={
-    get,
+    Database,
     htmltextencode,
-    htmltextdecode,
-    contain,
     get_token,
-    getToken,
     highlight_all,
     border_all
 }
-evalScript.directoryOfThisScript=
-    document.currentScript.src.replace(/[^\/]*$/,'')
 function get(path,callback){
     var request=new XMLHttpRequest
     request.onreadystatechange=()=>{
@@ -18,7 +17,7 @@ function get(path,callback){
             callback&&callback(null,request.responseText)
         }
     }
-    request.open('GET',evalScript.directoryOfThisScript+path)
+    request.open('GET',directoryOfThisScript+path)
     request.send()
 }
 function evalScript(path,callback){
@@ -29,39 +28,8 @@ function evalScript(path,callback){
             callback&&callback(null)
         }
     }
-    request.open('GET',evalScript.directoryOfThisScript+path)
+    request.open('GET',directoryOfThisScript+path)
     request.send()
-}
-function evalScripts(paths,callback){
-    var countdownToCallback
-    countdownToCallback=paths.length
-    paths.forEach(path=>{
-        evalScript(path,()=>{
-            if(--countdownToCallback)
-                return
-            callback&&callback(null)
-        })
-    })
-}
-function requireScript(path,callback){
-    requireScript.loadedScripts=requireScript.loadedScripts||{}
-    if(requireScript.loadedScripts[path])
-        return callback(null)
-    evalScript(path,()=>{
-        requireScript.loadedScripts[path]=true
-        callback(null)
-    })
-}
-function requireScripts(path,callback){
-    var countdownToCallback
-    countdownToCallback=paths.length
-    paths.forEach(path=>{
-        requireScript(path,()=>{
-            if(--countdownToCallback)
-                return
-            callback&&callback(null)
-        })
-    })
 }
 function htmltextencode(s){
     var e=document.createElement('div')
@@ -73,19 +41,7 @@ function htmltextdecode(s){
     e.innerHTML=s
     return e.firstChild.data
 }
-function contain(key){
-    var bound=this.indexOf(key)
-    return bound!=-1&&this[bound]==key
-}
 function get_token(i,regex_first,regex){
-    if(regex_first.test(this[i])){
-        i++
-        while(i<this.length&&regex.test(this[i]))
-            i++
-    }
-    return i
-}
-function getToken(s,regex_first,regex){
     if(regex_first.test(this[i])){
         i++
         while(i<this.length&&regex.test(this[i]))
@@ -156,20 +112,21 @@ function text_border(s){
 function highlight_all(e,cb){
     e=e||document
     countdownToCallback.count=4
-    requireScript('highlightCpp.js',()=>{
+    modules.require('highlightCpp.js',()=>{
         var a,i
         a=e.getElementsByClassName('highlighted_cpp')
         countdownToCallback.count+=a.length
         for(i=0;i<a.length;i++)(e=>{
             syntaxHighlighter.highlightCpp(e.textContent,(err,res)=>{
                 e.innerHTML=res
-                e.style.visibility=''
+                if(!e.classList.contains('bordered'))
+                    e.style.visibility=''
                 countdownToCallback()
             })
         })(a[i])
         countdownToCallback()
     })
-    requireScript('langHtml.js',()=>{
+    modules.require('langHtml.js',()=>{
         var a,i
         a=e.getElementsByClassName('highlighted_html')
         for(i=0;i<a.length;i++){
@@ -180,7 +137,7 @@ function highlight_all(e,cb){
         }
         countdownToCallback()
     })
-    requireScript('langJs.js',()=>{
+    modules.require('langJs.js',()=>{
         var a,i
         a=e.getElementsByClassName('highlighted_js')
         for(i=0;i<a.length;i++){
@@ -191,7 +148,7 @@ function highlight_all(e,cb){
         }
         countdownToCallback()
     })
-    requireScript('langPhp.js',()=>{
+    modules.require('langPhp.js',()=>{
         var a,i
         a=e.getElementsByClassName('highlighted_php')
         for(i=0;i<a.length;i++){
@@ -217,5 +174,51 @@ function border_all(e,cb){
         a[i].style.visibility=''
     }
     cb&&cb(null)
+}
+function Database(name){
+    Cache.call(this,(key,cb)=>{
+        get(`${name}/${key}.json`,(err,res)=>{
+            this.data[key]=JSON.parse(res)
+            cb(null)
+        })
+    })
+    this.data={}
+}
+Database.prototype=Object.create(Cache.prototype)
+function Cache(load){
+    this.load=load
+    this.status={}
+    this.onLoad={}
+}
+Cache.prototype.require=function(key,cb){
+    if(key instanceof Array){
+        (countdownToCb=>{
+            key.forEach(key=>{
+                this.require(key,key=>{
+                    if(--countdownToCb)
+                        return
+                    cb(null)
+                })
+            })
+        })(key.length)
+        return
+    }
+    if(!this.status[key]){
+        this.status[key]=1
+        this.onLoad[key]=[]
+        this.load(key,err=>{
+            if(err)
+                return
+            this.status[key]=2
+            this.onLoad[key].forEach(cb=>{
+                cb(null)
+            })
+        })
+    }
+    if(this.status[key]==1){
+        this.onLoad[key].push(cb)
+        return
+    }
+    cb(null)
 }
 })()
