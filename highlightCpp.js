@@ -74,17 +74,13 @@ function highlightCpp(source,cb){
         'stlcontainers',
         'constants',
     ],err=>{
-        var res,startTime
         if(err)
             return cb(err)
         matchingRules.keywords.keywords=data.keywords
         matchingRules.library.keywords=data.library
         matchingRules.stlcontainers.keywords=data.stlcontainers
         matchingRules.constants.keywords=data.constants
-        startTime=new Date
-        res=highlight(analyze(source))
-        console.log((new Date)-startTime)
-        cb(null,res)
+        cb(null,highlight(analyze(source)))
     })
     function analyze(source){
 /*
