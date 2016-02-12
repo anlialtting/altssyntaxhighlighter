@@ -1,0 +1,45 @@
+(()=>{
+var
+    db=new syntaxHighlighter.Database('html'),
+    matchingRules={
+        comment:[
+            {
+                regex:/^(\<!.*\>)/,
+            }
+        ],
+        operator:{
+            regex:/^([\<=\>])/,
+        },
+        string:{
+            regex:/^(".*")/,
+        },
+        identifier:{
+            regex:/^([-A-Za-z]+)/,
+            containKeywords:[
+                'tagname',
+                'property',
+            ]
+        },
+        tagname:{
+            active:false,
+        },
+        property:{
+            active:false,
+        },
+    }
+syntaxHighlighter.highlightHtml=highlightHtml
+function highlightHtml(source,cb){
+    db.require([
+        'tagname',
+        'property',
+    ],err=>{
+        if(err)
+            return cb(err)
+        matchingRules.tagname.keywords=db.data.tagname
+        matchingRules.property.keywords=db.data.property
+        cb(null,syntaxHighlighter.highlight(
+            syntaxHighlighter.analyze(matchingRules,source)
+        ))
+    })
+}
+})()

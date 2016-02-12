@@ -1,3 +1,6 @@
+/*
+    font-weight:bold; 總是要加上 line-height:0px; 忘記原因了
+*/
 .lineNumber::before{
     content:attr(data-line-number);
 }
@@ -25,7 +28,6 @@
     tab-size:4;
     line-height:12pt;
 }
-/**/
 .highlighted_cpp span.characterLiteral{
     color:blue;
 }
@@ -68,10 +70,37 @@
     font-weight:bold;
     line-height:0px;
 }
-/**/
-.highlighted_cpp span.preprocessorInstruction{
+.highlighted_html span.comment{
+    color:gray;
+}
+.highlighted_html span.operator{
     color:green;
 }
-.highlighted_cpp span.includePI{
-    color:darkred;
+.highlighted_html span.tagname{
+    color:darkblue;
+    font-weight:bold;
+    line-height:0px;
+}
+.highlighted_html span.property{
+    color:deeppink;
+}
+.highlighted_html span.string{
+    color:blue;
+}
+.highlighted_js span.comment{
+    color:gray;
+}
+.highlighted_js span.string{
+    color:blue;
+}
+.highlighted_js span.number{
+    color:darkviolet;
+}
+.highlighted_js span.keyword{
+    color:darkblue;
+    font-weight:bold;
+    line-height:0px;
+}
+.highlighted_js span.operator{
+    color:red;
 }
