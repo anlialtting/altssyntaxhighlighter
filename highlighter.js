@@ -53,16 +53,7 @@ function text_border(s){
     logCountOfLines=Math.floor(Math.round(
         Math.log(countOfLines)/Math.log(10)*1e6
     )/1e6)
-    return`
-        <div style="position:relative;">
-            <div>
-                ${table(true).outerHTML}
-            </div>
-            <div style="position:absolute;top:0px;">
-                ${table(false).outerHTML}
-            </div>
-        </div>
-    `
+    return table()
     function splitSourceByNewlineCharacter(source){
         var
             result='',
@@ -86,7 +77,7 @@ function text_border(s){
         )(div.childNodes[i])
         return result
     }
-    function table(isShowLineNumbers){
+    function table(){
         var
             table,
             lines
@@ -94,37 +85,33 @@ function text_border(s){
         lines=s.split('\n')
         lines.pop()
         lines.forEach((e,i)=>{
-            table.appendChild(tr(i,e,isShowLineNumbers))
+            table.appendChild(tr(i,e))
         })
         return table
     }
-    function tr(i,s,isShowLineNumbers){
+    function tr(i,s){
         var
             tr
         tr=document.createElement('tr')
-        tr.appendChild(td_lineNumber(i,isShowLineNumbers))
-        tr.appendChild(td_content(s,isShowLineNumbers))
+        tr.appendChild(td_lineNumber(i))
+        tr.appendChild(td_content(s))
         return tr
     }
-    function td_lineNumber(i,isShowLineNumbers){
+    function td_lineNumber(i){
         var
             td
         td=document.createElement('td')
         td.className='lineNumber'
+        td.dataset.lineNumber=i+1
         td.style.width=6*(logCountOfLines+1)+'pt'
-        if(isShowLineNumbers)
-            td.textContent=i+1
         return td
     }
-    function td_content(s,isShowLineNumbers){
+    function td_content(s){
         var
             td
         td=document.createElement('td')
         td.className='content'
-        td.innerHTML=isShowLineNumbers?
-            '<span style="visibility:hidden;">'+s+'</span>'
-        :
-            s
+        td.innerHTML=s
         return td
     }
 }
@@ -185,11 +172,13 @@ function highlight_all(e,cb){
     }
 }
 function border_all(e,cb){
-    var a,i
+    var a,i,source
     e=e||document
     a=e.getElementsByClassName('bordered')
     for(i=0;i<a.length;i++){
-        a[i].innerHTML=text_border(a[i].innerHTML)
+        source=a[i].innerHTML
+        a[i].innerHTML=''
+        a[i].appendChild(text_border(source))
         a[i].style.visibility=''
     }
     cb&&cb(null)

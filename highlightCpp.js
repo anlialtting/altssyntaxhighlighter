@@ -1,19 +1,77 @@
 (()=>{
 var
-    db=new syntaxHighlighter.Database('cpp')
+    db=new syntaxHighlighter.Database('cpp'),
+    data=db.data,
+    matchingRules={
+        characterLiteral:{
+            regex:/^('.')/,
+        },
+        comment:[
+            {
+                regex:/^(\/\/.*)\n/,
+            },{
+                regex:/^(\/\*(?:.|\n)*\*\/)/,
+            }
+        ],
+        cStringLiteral:{
+            regex:/^(".*")/,
+        },
+        identifier:{
+            regex:/^([A-Z_a-z][0-9A-Z_a-z]*)/,
+            containKeywords:[
+                'keywords',
+                'library',
+                'stlcontainers',
+                'constants',
+            ]
+        },
+        numberLiteral:{
+            regex:/^([0-9][0-9ELXelx.]*)/,
+        },
+        operator:{
+            regex:/^([()\[\]{}<>+\-*\/%,:;?&^=!~.|])/,
+        },
+        preprocessingDirective:{
+            headRegex:/^(#)/,
+            tailRegex:/^(\n)/,
+            contain:['comment'],
+        },
+        test:{
+            active:false,
+            keywords:['meow']
+        },
+        keywords:{
+            active:false,
+        },
+        library:{
+            active:false,
+        },
+        stlcontainers:{
+            active:false,
+        },
+        constants:{
+            active:false,
+        },
+    }
 syntaxHighlighter.highlightCpp=highlightCpp
 function highlightCpp(source,cb){
-    var
-        data=db.data
     db.require([
         'keywords',
         'library',
         'stlcontainers',
         'constants',
     ],err=>{
+        var res,startTime
         if(err)
             return cb(err)
-        cb(null,highlight(analyze(source)))
+        matchingRules.keywords.keywords=data.keywords
+        matchingRules.library.keywords=data.library
+        matchingRules.stlcontainers.keywords=data.stlcontainers
+        matchingRules.constants.keywords=data.constants
+        startTime=new Date
+        res=highlight(analyze(source))
+        console.log((new Date)-startTime)
+        cb(null,res)
     })
     function analyze(source){
 /*
@@ -51,11 +109,12 @@ function highlightCpp(source,cb){
                     }
                     continue
                 }
-                if(typeof source[0]=='object')(c=>{
-                    dfs(source[0].list,c)
-                    result.push(new source[0].constructor(c))
+                if(typeof source[0]=='object')(()=>{
+                    var list=[]
+                    dfs(source[0].list,list)
+                    result.push(new Syntax(source[0].syntaxName,list))
                     source.shift()
-                })([])
+                })()
             }
             while(a.length&&a[0]==0){
                 result.push(new DeletedNewline)
@@ -63,92 +122,127 @@ function highlightCpp(source,cb){
             }
         }
     }
-    function analyze0(sourceFile){
+    function analyze0(source){
         var result=[]
         while(
-            matchCharacterLiteral(result)||
-            matchComment(result)||
-            matchCStringLiteral(result)||
-            matchIdentifier(result)||
-            matchNumberLiteral(result)||
-            matchOperator(result)||
-            matchPreprocessingDirective(result)||
+            match(result)||
             matchSingleCharcter(result)
         );
         return result
-        function matchCharacterLiteral(result){ // 0
-            var m=sourceFile.match(/^'.'/)
-            if(!m)
-                return
-            m=m[0]
-            result.push(new CharacterLiteral([m]))
-            sourceFile=sourceFile.substring(m.length)
-            return true
+        function match(result){
+            var syntaxName
+            for(syntaxName in matchingRules)
+                if(matchBySyntaxName(syntaxName,result))
+                    return true
         }
-        function matchComment(result){ // 0
-            var m=sourceFile.match(/^(\/\/.*\n|\/\*(.|\n)*\*\/)/)
-            if(!m)
+        function matchBySyntaxName(syntaxName,result){
+            var i
+            if(matchingRules[syntaxName] instanceof Array){
+                for(i=0;i<matchingRules[syntaxName].length;i++)
+                    if(matchByRule(
+                        syntaxName,
+                        matchingRules[syntaxName][i],
+                        result
+                    ))
+                        return true
                 return
-            m=m[0]
-            result.push(new Comment([m]))
-            sourceFile=sourceFile.substring(m.length)
-            return true
-        }
-        function matchCStringLiteral(result){ // 0
-            var m=sourceFile.match(/^".*"/)
-            if(!m)
-                return
-            m=m[0]
-            result.push(new CStringLiteral([m]))
-            sourceFile=sourceFile.substring(m.length)
-            return true
-        }
-        function matchIdentifier(result){ // 0
-            var m=sourceFile.match(/^[A-Z_a-z][0-9A-Z_a-z]*/)
-            if(!m)
-                return
-            m=m[0]
-            result.push(new Identifier([m]))
-            sourceFile=sourceFile.substring(m.length)
-            return true
-        }
-        function matchNumberLiteral(result){ // 0
-            var m=sourceFile.match(/^[0-9][0-9ELXelx.]*/)
-            if(!m)
-                return
-            m=m[0]
-            result.push(new NumberLiteral([m]))
-            sourceFile=sourceFile.substring(m.length)
-            return true
-        }
-        function matchOperator(result){ // 0
-            var m=sourceFile.match(/^[()\[\]{}<>+\-*\/%,:;?&^=!~.|]/)
-            if(!m)
-                return
-            m=m[0]
-            result.push(new Operator([m]))
-            sourceFile=sourceFile.substring(m.length)
-            return true
-        }
-        function matchPreprocessingDirective(result){ // 0
-            var m=sourceFile.match(/^#/)
-            if(!m)
-                return
-            m=m[0]
-            result.push(new PreprocessingDirective)
-            matchSingleCharcter(result[result.length-1].list)
-            while(!sourceFile.match(/^\n/)){
-                matchComment(result[result.length-1].list)||
-                matchSingleCharcter(result[result.length-1].list)
             }
-            matchSingleCharcter(result[result.length-1].list)
-            return true
+            return matchByRule(
+                syntaxName,
+                matchingRules[syntaxName],
+                result
+            )
         }
-        function matchSingleCharcter(result){ // 1
-            if(!sourceFile.length)
+        function matchByRule(syntaxName,rule,result){
+            if(rule.active==false)
                 return
-            result.push(sourceFile[0])
-            sourceFile=sourceFile.substring(1)
+            if(rule.keywords)
+                return matchSyntaxByKeyword(
+                    syntaxName,
+                    rule.keywords,
+                    result
+                )
+            if(rule.regex)
+                return matchSyntaxByRegex(
+                    syntaxName,
+                    rule.regex,
+                    rule.containKeywords,
+                    result
+                )
+            if(rule.headRegex)
+                return rangeSyntaxByRegex(
+                    syntaxName,
+                    rule.headRegex,
+                    rule.tailRegex,
+                    rule.contain,
+                    result
+                )
+        }
+        function matchSyntaxByKeyword(syntaxName,keywords,result){
+            var i
+            for(i=0;i<keywords.length;i++)
+                if(source.substring(0,keywords[i].length)==keywords[i]){
+                    result.push(new Syntax(syntaxName,[keywords[i]]))
+                    source=source.substring(keywords[i].length)
+                    return true
+                }
+        }
+        function matchSyntaxByRegex(syntaxName,regex,containKeywords,result){
+            var
+                syntax,
+                match
+            if(!regex.test(source))
+                return
+            match=source.match(regex)[1]
+            source=source.substring(match.length)
+            syntax=new Syntax(syntaxName)
+            containKeywords&&submatch()||
+            syntax.list.push(match)
+            result.push(syntax)
+            return true
+            function submatch(){
+                var i,j,keywords
+                for(i=0;i<containKeywords.length;i++){
+                    keywords=matchingRules[containKeywords[i]].keywords
+                    if(keywords.indexOf(match)!=-1){
+                        syntax.list.push(new Syntax(containKeywords[i],[match]))
+                        return true
+                    }
+                }
+            }
+        }
+        function rangeSyntaxByRegex(syntaxName,headRegex,tailRegex,contain,result){
+            var
+                syntax
+            if(!headRegex.test(source))
+                return
+            syntax=new Syntax(syntaxName)
+            simpleMatch(headRegex,syntax.list)
+            while(!source.match(tailRegex)&&(
+                submatch()||
+                matchSingleCharcter(syntax.list)
+            ));
+            simpleMatch(tailRegex,syntax.list)
+            result.push(syntax)
+            return true
+            function submatch(){
+                var i
+                for(i=0;i<contain.length;i++)
+                    if(matchBySyntaxName(contain[i],syntax.list))
+                        return true
+            }
+            function simpleMatch(regex,result){
+                var match
+                match=source.match(regex)[1]
+                syntax.list.push(match)
+                source=source.substring(match.length)
+            }
+        }
+        function matchSingleCharcter(result){
+            if(!source.length)
+                return
+            result.push(source[0])
+            source=source.substring(1)
             return true
         }
     }
@@ -158,93 +252,21 @@ function highlightCpp(source,cb){
             if(typeof item=='string')
                 result+=syntaxHighlighter.htmltextencode(item)
             if(item instanceof DeletedNewline)
-                result+='<span>\\\n</span>'
-            if(item instanceof CharacterLiteral)
-                result+=`<span class="characterLiteral">${
+                result+='\\\n'
+            if(typeof item=='object'&&matchingRules[item.syntaxName]){
+                result+=`<span class="${item.syntaxName}">${
                     highlight(item.list)
                 }</span>`
-            if(item instanceof Comment)
-                result+=`<span class="comment">${
-                    highlight(item.list)
-                }</span>`
-            if(item instanceof CStringLiteral)
-                result+=`<span class="cStringLiteral">${
-                    highlight(item.list)
-                }</span>`
-            if(item instanceof Identifier)(token=>{
-                if(data.keywords.indexOf(token)!=-1)
-                    result+='<span class="keywords">'+token+'</span>'
-                else if(data.library.indexOf(token)!=-1)
-                    result+='<span class="library">'+token+'</span>'
-                else if(data.stlcontainers.indexOf(token)!=-1)
-                    result+='<span class="stlcontainers">'+token+'</span>'
-                else if(data.constants.indexOf(token)!=-1)
-                    result+='<span class="constants">'+token+'</span>'
-                else
-                    result+=token
-            })(highlight(item.list))
-            if(item instanceof NumberLiteral)
-                result+=`<span class="numberLiteral">${
-                    highlight(item.list)
-                }</span>`
-            if(item instanceof Operator)
-                result+=`<span class="operator">${
-                    highlight(item.list)
-                }</span>`
-            if(item instanceof PreprocessingDirective)
-                result+=`<span class="preprocessingDirective">${
-                    highlight(item.list)
-                }</span>`
+            }
         })
         return result
     }
     function DeletedNewline(list){
         this.list=list||[]
-        this.valueOf=()=>{
-            return this.list
-        }
     }
-    function CharacterLiteral(list){
+    function Syntax(syntaxName,list){
+        this.syntaxName=syntaxName
         this.list=list||[]
-        this.valueOf=()=>{
-            return this.list
-        }
-    }
-    function Comment(list){
-        this.list=list||[]
-        this.valueOf=()=>{
-            return this.list
-        }
-    }
-    function CStringLiteral(list){
-        this.list=list||[]
-        this.valueOf=()=>{
-            return this.list
-        }
-    }
-    function Identifier(list){
-        this.list=list||[]
-        this.valueOf=()=>{
-            return this.list
-        }
-    }
-    function NumberLiteral(list){
-        this.list=list||[]
-        this.valueOf=()=>{
-            return this.list
-        }
-    }
-    function Operator(list){
-        this.list=list||[]
-        this.valueOf=()=>{
-            return this.list
-        }
-    }
-    function PreprocessingDirective(list){
-        this.list=list||[]
-        this.valueOf=()=>{
-            return this.list
-        }
     }
 }
 })()
