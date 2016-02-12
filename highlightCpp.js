@@ -33,12 +33,25 @@ var
         },
         preprocessingDirective:{
             headRegex:/^(#)/,
-            tailRegex:/^(\n)/,
-            contain:['comment'],
+            tailRegex:/^()\n/,
+            contain:['comment','includePD','definePD'],
         },
-        test:{
+        includePD:{
             active:false,
-            keywords:['meow']
+            headRegex:/^(include)/,
+            tailRegex:/^()\n/,
+            contain:['comment','headerName'],
+        },
+        headerName:{
+            active:false,
+            headRegex:/^(\<)/,
+            tailRegex:/^(\>)/,
+        },
+        definePD:{
+            active:false,
+            headRegex:/^(define)/,
+            tailRegex:/^()\n/,
+            contain:['comment','operator'],
         },
         keywords:{
             active:false,
@@ -154,7 +167,10 @@ function highlightCpp(source,cb){
             )
         }
         function matchByRule(syntaxName,rule,result){
-            if(rule.active==false)
+            if(
+                arguments.callee.caller.caller.name=='match'&&
+                rule.active==false
+            )
                 return
             if(rule.keywords)
                 return matchSyntaxByKeyword(
@@ -219,7 +235,7 @@ function highlightCpp(source,cb){
             syntax=new Syntax(syntaxName)
             simpleMatch(headRegex,syntax.list)
             while(!source.match(tailRegex)&&(
-                submatch()||
+                contain&&submatch()||
                 matchSingleCharcter(syntax.list)
             ));
             simpleMatch(tailRegex,syntax.list)
@@ -233,6 +249,9 @@ function highlightCpp(source,cb){
             }
             function simpleMatch(regex,result){
                 var match
+                // bad
+                if(!regex.test(source))
+                    return
                 match=source.match(regex)[1]
                 syntax.list.push(match)
                 source=source.substring(match.length)
