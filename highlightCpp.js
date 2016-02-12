@@ -1,67 +1,9 @@
 (()=>{
 var
-    db=new syntaxHighlighter.Database('cpp'),
-    regexOfOperators=/[()\[\]{}<>+\-*\/%,:;?&^=!~.|]/,
-    regexOfSpecifier=/^[A-Za-z_][0-9A-Za-z_]*/,
-    regexOfNumberLiteral=/^[0-9][0-9ELXelx.]*/
+    db=new syntaxHighlighter.Database('cpp')
 syntaxHighlighter.highlightCpp=highlightCpp
-function _highlightCpp(sourceFile,cb){
-    cb(null,highlight(analyze(sourceFile)))
-    function analyze(sourceFile){
-        var
-            result=[]
-        a=sourceFile.split('\\\n')
-        b=analyze0(a.join(''))
-        a=a.map(s=>s.length)
-        a.pop()
-        while(a.length&&b.length){
-            if(typeof b[0]!='string'){
-                result.push(b.shift())
-                continue
-            }
-            if(a[0]<b[0].length){
-                result.push(b[0].substring(0,a[0]))
-                result.push(new DeletedNewline)
-                b[0]=b[0].substring(a[0])
-                a.shift()
-            }else{
-                result.push(b[0])
-                a[0]-=b[0].length
-                b.shift()
-            }
-        }
-        while(a.length){
-            result.push(new DeletedNewline)
-            a.shift()
-        }
-        while(b.length){
-            result.push(b[0])
-            b.shift()
-        }
-        return result
-    }
-    function analyze0(sourceFile){
-        var a=sourceFile.split('\n').map(s=>s+'\n')
-        a.pop()
-        return a
-    }
-    function highlight(list){
-        var result=''
-        list.forEach(item=>{
-            if(typeof item=='string')
-                result+=syntaxHighlighter.htmltextencode(item)
-            if(item instanceof DeletedNewline)
-                result+='<span style="color:green">\\\n</span>'
-        })
-        return result
-    }
-    function DeletedNewline(){
-    }
-}
-function highlightCpp(code,cb){
+function highlightCpp(source,cb){
     var
-        input=code,
-        output='',
         data=db.data
     db.require([
         'keywords',
@@ -71,205 +13,238 @@ function highlightCpp(code,cb){
     ],err=>{
         if(err)
             return cb(err)
-        highlightCppCode()
-        cb(null,output)
+        cb(null,highlight(analyze(source)))
     })
-    function highlightCppCode(){
-        while(
-            tryHighlightSingleLineComment()||
-            tryHighlightMultiLineComment()||
-            tryHighlightPreprocessorInstruction()||
-            tryHighlightOperators()||
-            tryHighlightCharacterLiteral()||
-            tryHighlightCStringLiteral()||
-            tryHighlightSpecifier()||
-            tryHighlightNumberLiteral()||
-            tryHighlightSingleCharacter()
-        );
-    }
-    function tryHighlightSpecifier(){
-        if(!regexOfSpecifier.test(input))
-            return
-        highlightSpecifier()
-        return true
-    }
-    function highlightSpecifier(){
-        var token=input.match(regexOfSpecifier)[0]
-        if(data.keywords.indexOf(token)!=-1)
-            output+='<span class="keywords">'+token+'</span>'
-        else if(data.library.indexOf(token)!=-1)
-            output+='<span class="library">'+token+'</span>'
-        else if(data.stlcontainers.indexOf(token)!=-1)
-            output+='<span class="stlcontainers">'+token+'</span>'
-        else if(data.constants.indexOf(token)!=-1)
-            output+='<span class="constants">'+token+'</span>'
-        else
-            output+=token
-        input=input.substring(token.length)
-    }
-    function tryHighlightNumberLiteral(){
-        if(!regexOfNumberLiteral.test(input))
-            return
-        highlightNumberLiteral()
-        return true
-    }
-    function highlightNumberLiteral(){
-        var token=input.match(regexOfNumberLiteral)[0]
-        output+=
-            '<span class="number">'+
-            token+
-            '</span>'
-        input=input.substring(token.length)
-    }
-    function tryHighlightSingleCharacter(){
-        if(input.length==0)
-            return
-        highlightSingleCharacter()
-        return true
-    }
-    function highlightSingleCharacter(){
-        output+=syntaxHighlighter.htmltextencode(input[0])
-        input=input.substring(1)
-    }
-    function tryHighlightPreprocessorInstruction(){
-        if(input[0]!='#')
-            return
-        highlightPreprocessorInstruction()
-        return true
-    }
-    function highlightPreprocessorInstruction(){
-        output+='<span class="preprocessorInstruction">'
-        while(input[0]!='\n'&&(
-            tryHighlightIncludePI()||
-            tryHighlightSingleLineComment()||
-            tryHighlightMultiLineComment()||
-            tryHighlightIgnoredNewlineCharacter()||
-            tryHighlightSingleCharacter()
-        ));
-        output+='</span>'
-    }
-    function tryHighlightIncludePI(){
-        if(!/^include/.test(input))
-            return
-        highlightIncludePI()
-        return true
-    }
-    function highlightIncludePI(){
-        output+=syntaxHighlighter.htmltextencode(input.substring(0,7))
-        input=input.substring(7)
-        output+='<span class="includePI">'
-        while(input[0]!='\n'&&(
-            tryHighlightSingleLineComment()||
-            tryHighlightMultiLineComment()||
-            tryHighlightIgnoredNewlineCharacter()||
-            tryHighlightSingleCharacter()
-        ));
-        output+='</span>'
-    }
-    function tryHighlightSingleLineComment(){
-        if(input.substring(0,2)!='//')
-            return
-        highlightSingleLineComment()
-        return true
-    }
-    function highlightSingleLineComment(){
-        output+='<span class="singleLineComment">'
-        while(input[0]!='\n'&&(
-            tryHighlightIgnoredNewlineCharacter()||
-            tryHighlightSingleCharacter()
-        ));
-        output+='</span>'
-    }
-    function tryHighlightMultiLineComment(){
-        if(input.substring(0,2)!='/*')
-            return
-        highlightMultiLineComment()
-        return true
-    }
-    function highlightMultiLineComment(){
-        output+='<span class="multiLineComment">'
-        while(input.length){
-            if(input.substring(0,2)=='*/'){
-                highlightSingleCharacter()
-                highlightSingleCharacter()
-                break
+    function analyze(source){
+/*
+    N3242 2.2.2
+    .   Delete "backslash character (\) immediately followed by a
+        new-line character".
+    .   Call analyze0().
+    .   Add DeletedNewline() back.
+*/
+        var
+            result=[],
+            a=source.split('\\\n'),
+        source=analyze0(a.join(''))
+        a=a.map(s=>s.length)
+        a.pop()
+        dfs(source,result)
+        return result
+        function dfs(source,result){
+            while(source.length){
+                if(typeof source[0]=='string'){
+                    if(a.length==0){
+                        result.push(source[0])
+                        source.shift()
+                    }else{
+                        if(a[0]<source[0].length){
+                            result.push(source[0].substring(0,a[0]))
+                            result.push(new DeletedNewline)
+                            source[0]=source[0].substring(a[0])
+                            a.shift()
+                        }else{
+                            result.push(source[0])
+                            a[0]-=source[0].length
+                            source.shift()
+                        }
+                    }
+                    continue
+                }
+                if(typeof source[0]=='object')(c=>{
+                    dfs(source[0].list,c)
+                    result.push(new source[0].constructor(c))
+                    source.shift()
+                })([])
             }
-            tryHighlightSingleCharacter()
+            while(a.length&&a[0]==0){
+                result.push(new DeletedNewline)
+                a.shift()
+            }
         }
-        output+='</span>'
     }
-    function tryHighlightBlackslashInLiteral(){
-        if(input[0]!='\\')
-            return
-        highlightBlackslashInLiteral()
-        return true
-    }
-    function highlightBlackslashInLiteral(){
-        highlightSingleCharacter()
-        highlightSingleCharacter()
-    }
-    function tryHighlightCharacterLiteral(){
-        if(input[0]!='\'')
-            return
-        highlightCharacterLiteral()
-        return true
-    }
-    function highlightCharacterLiteral(){
-        var state
-        output+='<span class="characterLiteral">'
-        state=0
-        while(input.length){
-            if(state==2)
-                break
-            if(input[0]=='\'')
-                state++
-            tryHighlightIgnoredNewlineCharacter()||
-            tryHighlightBlackslashInLiteral()||
-            tryHighlightSingleCharacter()
+    function analyze0(sourceFile){
+        var result=[]
+        while(
+            matchCharacterLiteral(result)||
+            matchComment(result)||
+            matchCStringLiteral(result)||
+            matchIdentifier(result)||
+            matchNumberLiteral(result)||
+            matchOperator(result)||
+            matchPreprocessingDirective(result)||
+            matchSingleCharcter(result)
+        );
+        return result
+        function matchCharacterLiteral(result){ // 0
+            var m=sourceFile.match(/^'.'/)
+            if(!m)
+                return
+            m=m[0]
+            result.push(new CharacterLiteral([m]))
+            sourceFile=sourceFile.substring(m.length)
+            return true
         }
-        output+='</span>'
-    }
-    function tryHighlightCStringLiteral(){
-        if(input[0]!='"')
-            return
-        highlightCStringLiteral()
-        return true
-    }
-    function highlightCStringLiteral(){
-        var state
-        output+='<span class="cStringLiteral">'
-        state=0
-        while(input.length){
-            if(state==2)
-                break
-            if(input[0]=='"')
-                state++
-            tryHighlightIgnoredNewlineCharacter()||
-            tryHighlightBlackslashInLiteral()||
-            tryHighlightSingleCharacter()
+        function matchComment(result){ // 0
+            var m=sourceFile.match(/^(\/\/.*\n|\/\*(.|\n)*\*\/)/)
+            if(!m)
+                return
+            m=m[0]
+            result.push(new Comment([m]))
+            sourceFile=sourceFile.substring(m.length)
+            return true
         }
-        output+='</span>'
+        function matchCStringLiteral(result){ // 0
+            var m=sourceFile.match(/^".*"/)
+            if(!m)
+                return
+            m=m[0]
+            result.push(new CStringLiteral([m]))
+            sourceFile=sourceFile.substring(m.length)
+            return true
+        }
+        function matchIdentifier(result){ // 0
+            var m=sourceFile.match(/^[A-Z_a-z][0-9A-Z_a-z]*/)
+            if(!m)
+                return
+            m=m[0]
+            result.push(new Identifier([m]))
+            sourceFile=sourceFile.substring(m.length)
+            return true
+        }
+        function matchNumberLiteral(result){ // 0
+            var m=sourceFile.match(/^[0-9][0-9ELXelx.]*/)
+            if(!m)
+                return
+            m=m[0]
+            result.push(new NumberLiteral([m]))
+            sourceFile=sourceFile.substring(m.length)
+            return true
+        }
+        function matchOperator(result){ // 0
+            var m=sourceFile.match(/^[()\[\]{}<>+\-*\/%,:;?&^=!~.|]/)
+            if(!m)
+                return
+            m=m[0]
+            result.push(new Operator([m]))
+            sourceFile=sourceFile.substring(m.length)
+            return true
+        }
+        function matchPreprocessingDirective(result){ // 0
+            var m=sourceFile.match(/^#/)
+            if(!m)
+                return
+            m=m[0]
+            result.push(new PreprocessingDirective)
+            matchSingleCharcter(result[result.length-1].list)
+            while(!sourceFile.match(/^\n/)){
+                matchComment(result[result.length-1].list)||
+                matchSingleCharcter(result[result.length-1].list)
+            }
+            matchSingleCharcter(result[result.length-1].list)
+            return true
+        }
+        function matchSingleCharcter(result){ // 1
+            if(!sourceFile.length)
+                return
+            result.push(sourceFile[0])
+            sourceFile=sourceFile.substring(1)
+            return true
+        }
     }
-    function tryHighlightOperators(){
-        if(!regexOfOperators.test(input[0]))
-            return
-        highlightOperators()
-        return true
+    function highlight(list){
+        var result=''
+        list.forEach(item=>{
+            if(typeof item=='string')
+                result+=syntaxHighlighter.htmltextencode(item)
+            if(item instanceof DeletedNewline)
+                result+='<span>\\\n</span>'
+            if(item instanceof CharacterLiteral)
+                result+=`<span class="characterLiteral">${
+                    highlight(item.list)
+                }</span>`
+            if(item instanceof Comment)
+                result+=`<span class="comment">${
+                    highlight(item.list)
+                }</span>`
+            if(item instanceof CStringLiteral)
+                result+=`<span class="cStringLiteral">${
+                    highlight(item.list)
+                }</span>`
+            if(item instanceof Identifier)(token=>{
+                if(data.keywords.indexOf(token)!=-1)
+                    result+='<span class="keywords">'+token+'</span>'
+                else if(data.library.indexOf(token)!=-1)
+                    result+='<span class="library">'+token+'</span>'
+                else if(data.stlcontainers.indexOf(token)!=-1)
+                    result+='<span class="stlcontainers">'+token+'</span>'
+                else if(data.constants.indexOf(token)!=-1)
+                    result+='<span class="constants">'+token+'</span>'
+                else
+                    result+=token
+            })(highlight(item.list))
+            if(item instanceof NumberLiteral)
+                result+=`<span class="numberLiteral">${
+                    highlight(item.list)
+                }</span>`
+            if(item instanceof Operator)
+                result+=`<span class="operator">${
+                    highlight(item.list)
+                }</span>`
+            if(item instanceof PreprocessingDirective)
+                result+=`<span class="preprocessingDirective">${
+                    highlight(item.list)
+                }</span>`
+        })
+        return result
     }
-    function highlightOperators(){
-        output+='<span class="operators">'
-        highlightSingleCharacter()
-        output+='</span>'
+    function DeletedNewline(list){
+        this.list=list||[]
+        this.valueOf=()=>{
+            return this.list
+        }
     }
-    function tryHighlightIgnoredNewlineCharacter(){
-        if(input.substring(0,2)!='\\\n')
-            return
-        highlightIgnoredNewlineCharacter()
-        return true
+    function CharacterLiteral(list){
+        this.list=list||[]
+        this.valueOf=()=>{
+            return this.list
+        }
     }
-    function highlightIgnoredNewlineCharacter(){
-        highlightSingleCharacter()
-        highlightSingleCharacter()
+    function Comment(list){
+        this.list=list||[]
+        this.valueOf=()=>{
+            return this.list
+        }
+    }
+    function CStringLiteral(list){
+        this.list=list||[]
+        this.valueOf=()=>{
+            return this.list
+        }
+    }
+    function Identifier(list){
+        this.list=list||[]
+        this.valueOf=()=>{
+            return this.list
+        }
+    }
+    function NumberLiteral(list){
+        this.list=list||[]
+        this.valueOf=()=>{
+            return this.list
+        }
+    }
+    function Operator(list){
+        this.list=list||[]
+        this.valueOf=()=>{
+            return this.list
+        }
+    }
+    function PreprocessingDirective(list){
+        this.list=list||[]
+        this.valueOf=()=>{
+            return this.list
+        }
     }
 }
 })()
