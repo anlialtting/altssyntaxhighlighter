@@ -1,7 +1,7 @@
 (()=>{
 var
     directoryOfThisScript=
-        document.currentScript.src.replace(/[^\/]*$/,''),
+        document.currentScript.getAttribute('src').replace(/[^\/]*$/,''),
     modules=new Cache(evalScript)
 window.syntaxHighlighter={
     Database,
