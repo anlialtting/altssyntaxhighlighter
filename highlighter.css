@@ -10,10 +10,10 @@
 .bordered table{
     table-layout:fixed;
     width:100%;
+    font-family:monospace;
 }
 .bordered td.lineNumber{
     text-align:right;
-    font-family:monospace;
     color:gray;
     vertical-align:top;
     height:12pt;
@@ -22,11 +22,22 @@
 .bordered td.content{
     white-space:pre;
     word-wrap:break-word;
-    font-family:monospace;
 }
 .highlighted_cpp{
     tab-size:4;
     line-height:12pt;
+}
+span.highlighted_cpp{
+    font-family:monospace;
+}
+span.highlighted_html{
+    font-family:monospace;
+}
+span.highlighted_js{
+    font-family:monospace;
+}
+span.highlighted_tex{
+    font-family:monospace;
 }
 .highlighted_cpp span.characterLiteral{
     color:blue;
@@ -103,4 +114,22 @@
 }
 .highlighted_js span.operator{
     color:red;
+}
+.highlighted_tex span.comment{
+    color:gray;
+}
+.highlighted_tex span.operator{
+    color:red;
+}
+.highlighted_tex span.coreCommands{
+    color:blue;
+}
+.highlighted_tex span.documentClasses{
+    color:green;
+}
+.highlighted_tex span.commonArguments{
+    color:green;
+}
+.highlighted_tex span.commonPackages{
+    color:green;
 }

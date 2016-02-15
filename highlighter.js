@@ -9,7 +9,6 @@ window.syntaxHighlighter={
     newlineDeletedAnalyze,
     highlight,
     htmltextencode,
-    get_token,
     highlight_all,
     border_all
 }
@@ -38,14 +37,6 @@ function htmltextencode(s){
     var e=document.createElement('div')
     e.textContent=s
     return e.innerHTML
-}
-function get_token(i,regex_first,regex){
-    if(regex_first.test(this[i])){
-        i++
-        while(i<this.length&&regex.test(this[i]))
-            i++
-    }
-    return i
 }
 function text_border(s){
     var
@@ -120,7 +111,7 @@ function text_border(s){
 }
 function highlight_all(e,cb){
     e=e||document
-    countdownToCallback.count=4
+    countdownToCallback.count=1+4
     modules.require('highlightCpp.js',()=>{
         var a,i
         a=e.getElementsByClassName('highlighted_cpp')
@@ -163,16 +154,20 @@ function highlight_all(e,cb){
         })(a[i])
         countdownToCallback()
     })
-    /*modules.require('langPhp.js',()=>{
+    modules.require('highlightTex.js',()=>{
         var a,i
-        a=e.getElementsByClassName('highlighted_php')
-        for(i=0;i<a.length;i++){
-            a[i].innerHTML=syntaxHighlighter.highlight_php(
-                a[i].textContent
-            )
-            a[i].style.visibility=''
-        }
-    })*/
+        a=e.getElementsByClassName('highlighted_tex')
+        countdownToCallback.count+=a.length
+        for(i=0;i<a.length;i++)(e=>{
+            syntaxHighlighter.highlightTex(e.textContent,(err,res)=>{
+                e.innerHTML=res
+                if(!e.classList.contains('bordered'))
+                    e.style.visibility=''
+                countdownToCallback()
+            })
+        })(a[i])
+        countdownToCallback()
+    })
     countdownToCallback()
     function countdownToCallback(){
         if(--countdownToCallback.count)

@@ -1,0 +1,64 @@
+/*
+This is a sample module.
+*/
+(()=>{
+var
+    db=new syntaxHighlighter.Database('tex'),
+    matchingRules={
+        comment:{
+            regex:/^(%.*\n)/,
+        },
+        command:{
+            headRegex:/^()\\/,
+            tailRegex:/^()[^\\a-z]/,
+            contain:['operator','commandName'],
+        },
+        operator:{
+            regex:/^([\\\[\]\{\}])/,
+        },
+        identifier:{
+            regex:/^([a-z]+)/,
+            containKeywords:[
+                'documentClasses',
+                'commonArguments',
+                'commonPackages',
+            ],
+        },
+        commandName:{
+            active:false,
+            regex:/^([a-z]+)/,
+            containKeywords:['coreCommands'],
+        },
+        coreCommands:{
+            active:false,
+        },
+        documentClasses:{
+            active:false,
+        },
+        commonArguments:{
+            active:false,
+        },
+        commonPackages:{
+            active:false,
+        },
+    }
+syntaxHighlighter.highlightTex=highlightTex
+function highlightTex(source,cb){
+    db.require([
+        'coreCommands',
+        'documentClasses',
+        'commonArguments',
+        'commonPackages',
+    ],err=>{
+        if(err)
+            return cb(err)
+        matchingRules.coreCommands.keywords=db.data.coreCommands
+        matchingRules.documentClasses.keywords=db.data.documentClasses
+        matchingRules.commonArguments.keywords=db.data.commonArguments
+        matchingRules.commonPackages.keywords=db.data.commonPackages
+        cb(null,syntaxHighlighter.highlight(
+            syntaxHighlighter.analyze(matchingRules,source)
+        ))
+    })
+}
+})()
