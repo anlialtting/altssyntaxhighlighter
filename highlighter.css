@@ -63,7 +63,13 @@ span.highlighted_tex{
 .highlighted_cpp span.headerName{
     color:darkred;
 }
-.highlighted_cpp .definePD span.operator{
+.highlighted_cpp span.definePDKeyValue{
+    color:darkred;
+}
+.highlighted_cpp span.definePDValue{
+    color:darkblue;
+}
+.highlighted_cpp span.definePDValue span.operator{
     color:darkblue;
 }
 .highlighted_cpp span.keywords{

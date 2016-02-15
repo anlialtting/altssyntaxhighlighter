@@ -57,6 +57,19 @@ var
             active:false,
             headRegex:/^(define)/,
             tailRegex:/^()\n/,
+            contain:['comment','operator','definePDKeyValue'],
+        },
+        definePDKeyValue:{
+            active:false,
+            headRegex:/^([A-Z_a-z]+(?:\([^\)]*\))?)/,
+//
+            tailRegex:/^()\n/,
+            contain:['comment','operator','definePDValue'],
+        },
+        definePDValue:{
+            active:false,
+            headRegex:/^(.)/,
+            tailRegex:/^()\n/,
             contain:['comment','operator'],
         },
         keywords:{
