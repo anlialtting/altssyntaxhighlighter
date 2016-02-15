@@ -3,16 +3,20 @@ var
     directoryOfThisScript=
         document.currentScript.getAttribute('src').replace(/[^\/]*$/,''),
     modules=new Cache(evalScript)
-window.syntaxHighlighter={
-    Database,
-    analyze,
-    newlineDeletedAnalyze,
-    highlight,
-    htmltextencode,
-    highlight_all,
-    border_all
-}
+window.syntaxHighlighter=syntaxHighlighter
 loadCSS('highlighter.css')
+syntaxHighlighter.Database=Database
+syntaxHighlighter.analyze=analyze
+syntaxHighlighter.newlineDeletedAnalyze=newlineDeletedAnalyze
+syntaxHighlighter.highlight=highlight
+syntaxHighlighter.htmltextencode=htmltextencode
+syntaxHighlighter.highlight_all=highlight_all
+syntaxHighlighter.border_all=border_all
+function syntaxHighlighter(){
+    highlight_all(null,()=>{
+        border_all()
+    })
+}
 function getResource(path,callback){
     var request=new XMLHttpRequest
     request.onreadystatechange=()=>{
@@ -51,9 +55,6 @@ function text_border(s){
     var
         countOfLines,
         logCountOfLines
-    // 幫一些不懂得加 EOL 的人加！！！！！！！！
-    if(!/\n$/.test(s))
-        s+='\n'
     s=splitSourceByNewlineCharacter(s)
     countOfLines=s.split('\n').length-1
     logCountOfLines=Math.floor(Math.round(

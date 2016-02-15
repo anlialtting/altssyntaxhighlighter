@@ -45,6 +45,9 @@ span.highlighted_tex{
 .highlighted_cpp span.comment{
     color:gray;
 }
+.highlighted_cpp span.rawStringLiteral{
+    color:blue;
+}
 .highlighted_cpp span.cStringLiteral{
     color:blue;
 }
