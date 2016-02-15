@@ -12,6 +12,7 @@ window.syntaxHighlighter={
     highlight_all,
     border_all
 }
+loadCSS('highlighter.css')
 function getResource(path,callback){
     var request=new XMLHttpRequest
     request.onreadystatechange=()=>{
@@ -30,6 +31,14 @@ function get(path,callback){
 function evalScript(path,callback){
     getResource(directoryOfThisScript+path,(err,res)=>{
         eval(res)
+        callback&&callback(null)
+    })
+}
+function loadCSS(path,callback){
+    getResource(directoryOfThisScript+path,(err,res)=>{
+        var style=document.createElement('style')
+        style.innerHTML=res
+        document.head.appendChild(style)
         callback&&callback(null)
     })
 }
