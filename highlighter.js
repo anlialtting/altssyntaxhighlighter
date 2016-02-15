@@ -12,26 +12,26 @@ window.syntaxHighlighter={
     highlight_all,
     border_all
 }
-function get(path,callback){
+function getResource(path,callback){
     var request=new XMLHttpRequest
     request.onreadystatechange=()=>{
         if(request.readyState===4&&request.status===200){
             callback&&callback(null,request.responseText)
         }
     }
-    request.open('GET',directoryOfThisScript+path)
+    request.open('GET',path)
     request.send()
 }
+function get(path,callback){
+    getResource(directoryOfThisScript+path,(err,res)=>{
+        callback&&callback(null,res)
+    })
+}
 function evalScript(path,callback){
-    var request=new XMLHttpRequest
-    request.onreadystatechange=()=>{
-        if(request.readyState===4&&request.status===200){
-            eval(request.responseText)
-            callback&&callback(null)
-        }
-    }
-    request.open('GET',directoryOfThisScript+path)
-    request.send()
+    getResource(directoryOfThisScript+path,(err,res)=>{
+        eval(res)
+        callback&&callback(null)
+    })
 }
 function htmltextencode(s){
     var e=document.createElement('div')
