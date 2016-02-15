@@ -42,6 +42,9 @@ function text_border(s){
     var
         countOfLines,
         logCountOfLines
+    // 幫一些不懂得加 EOL 的人加！！！！！！！！
+    if(!/\n$/.test(s))
+        s+='\n'
     s=splitSourceByNewlineCharacter(s)
     countOfLines=s.split('\n').length-1
     logCountOfLines=Math.floor(Math.round(

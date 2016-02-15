@@ -1,10 +1,9 @@
 (()=>{
 var
     db=new syntaxHighlighter.Database('cpp'),
-    data=db.data,
     matchingRules={
         characterLiteral:{
-            regex:/^('.')/,
+            regex:/^('(?:[^'\\]|\\.)')/,
         },
         comment:[
             {
@@ -14,7 +13,7 @@ var
             }
         ],
         cStringLiteral:{
-            regex:/^(".*")/,
+            regex:/^("(?:[^"\\]|\\.)*")/,
         },
         identifier:{
             regex:/^([A-Z_a-z][0-9A-Z_a-z]*)/,
@@ -80,10 +79,10 @@ function highlightCpp(source,cb){
     ],err=>{
         if(err)
             return cb(err)
-        matchingRules.keywords.keywords=data.keywords
-        matchingRules.library.keywords=data.library
-        matchingRules.stlcontainers.keywords=data.stlcontainers
-        matchingRules.constants.keywords=data.constants
+        matchingRules.keywords.keywords=db.data.keywords
+        matchingRules.library.keywords=db.data.library
+        matchingRules.stlcontainers.keywords=db.data.stlcontainers
+        matchingRules.constants.keywords=db.data.constants
         cb(null,syntaxHighlighter.highlight(
             syntaxHighlighter.newlineDeletedAnalyze(matchingRules,source)
         ))
