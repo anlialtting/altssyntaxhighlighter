@@ -47,12 +47,20 @@ var
         headerName:[
             {
                 active:false,
-                regex:/^(\<[^\>]*\>)/,
+                headRegex:/^(<)/,
+                tailRegex:/^(>)/,
+                contain:['headerNameSlash'],
             },{
                 active:false,
-                regex:/^("[^"]*")/,
+                headRegex:/^(")/,
+                tailRegex:/^(")/,
+                contain:['headerNameSlash'],
             },
         ],
+        headerNameSlash:{
+            active:false,
+            regex:/^(\/)/
+        },
         definePD:{
             active:false,
             headRegex:/^(define)/,
@@ -62,7 +70,6 @@ var
         definePDKeyValue:{
             active:false,
             headRegex:/^([A-Z_a-z]+(?:\([^\)]*\))?)/,
-//
             tailRegex:/^()\n/,
             contain:['comment','operator','definePDValue'],
         },

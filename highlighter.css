@@ -63,6 +63,9 @@ span.highlighted_tex{
 .highlighted_cpp span.headerName{
     color:darkred;
 }
+.highlighted_cpp span.headerNameSlash{
+    color:darkblue;
+}
 .highlighted_cpp span.definePDKeyValue{
     color:darkred;
 }
