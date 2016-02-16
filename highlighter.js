@@ -42,8 +42,8 @@ function get(path,callback){
 }
 function evalScript(path,callback){
     getResource(directoryOfThisScript+path,(err,res)=>{
-        eval(res)
-        callback&&callback(null)
+        var result=eval(res)
+        callback&&callback(null,result)
     })
 }
 function loadCSS(path,callback){
@@ -150,8 +150,11 @@ function highlight_all(e,cb){
             functionName:'highlightTex',
         }]
     e=e||document
-    countdownToCallback.count=1+3*highlighters.length
+    countdownToCallback.count=1
     highlighters.forEach(highlighter=>{
+        if(e.querySelectorAll(highlighter.selector).length==0)
+            return
+        countdownToCallback.count+=3
         modules.require(highlighter.header,()=>{
             ;(()=>{
                 var a,i
