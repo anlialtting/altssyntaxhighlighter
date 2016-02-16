@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+<title>Example</title>
+</head>
+<body>
+<div style="display:table;table-layout:fixed;width:100%;">
+    <div style="display:table-row;">
+        <div style="display:table-cell;width:50%;padding:16px;">
+            <textarea id="textarea" style="width:100%;" rows="16">#include&lt;stdio.h&gt;
+int main(){
+    return 0;
+}
+</textarea>
+        </div>
+        <div style="display:table-cell;width:50%;padding:16px;vertical-align:top;">
+            <div id="div">
+                <div id="divCode" class="bordered highlighted_cpp"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="highlighter.js"></script>
+<script>
+(()=>{
+var
+    textarea=document.getElementById('textarea'),
+    div=document.getElementById('div'),
+    divCode=document.getElementById('divCode')
+textarea.oninput=()=>{
+    divCode.textContent=textarea.value+(/\n$/.test(textarea.value)?'':'\n')
+    syntaxHighlighter.highlight_all(div,()=>{
+        syntaxHighlighter.border_all(div,()=>{
+        })
+    })
+}
+})()
+</script>
+</body>
+</html>
