@@ -142,9 +142,22 @@ function highlight_all(e,cb){
             functionName:'highlightTex',
         }]
     e=e||document
-    countdownToCallback.count=1+2*highlighters.length
+    countdownToCallback.count=1+3*highlighters.length
     highlighters.forEach(highlighter=>{
         modules.require(highlighter.header,()=>{
+            ;(()=>{
+                var a,i
+                a=e.querySelectorAll('span'+highlighter.selector)
+                countdownToCallback.count+=a.length
+                for(i=0;i<a.length;i++)(e=>{
+                    syntaxHighlighter[highlighter.functionName](e.textContent,(err,res)=>{
+                        e.innerHTML=res
+                        e.style.visibility=''
+                        countdownToCallback()
+                    })
+                })(a[i])
+                countdownToCallback()
+            })()
             ;(()=>{
                 var a,i
                 a=e.querySelectorAll('div'+highlighter.selector)
