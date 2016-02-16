@@ -440,7 +440,7 @@ function highlight(list){
         if(typeof item=='string')
             result+=syntaxHighlighter.htmltextencode(item)
         if(typeof item=='object'){
-            result+=`<span class="${item.syntaxName}">${
+            result+=`<span class=${item.syntaxName}>${
                 highlight(item.list)
             }</span>`
         }
