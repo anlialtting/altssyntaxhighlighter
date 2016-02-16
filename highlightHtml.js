@@ -11,7 +11,7 @@ var
             regex:/^([\<=\>])/,
         },
         string:{
-            regex:/^(".*")/,
+            regex:/^("[^"]*")/,
         },
         identifier:{
             regex:/^([-A-Za-z]+)/,
