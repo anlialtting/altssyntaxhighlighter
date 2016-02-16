@@ -191,6 +191,7 @@ function border_all(e,cb){
             source=a[i].innerHTML
             a[i].innerHTML=''
             a[i].appendChild(text_border(source))
+            a[i].style.visibility=''
         }
     })()
     ;(()=>{
