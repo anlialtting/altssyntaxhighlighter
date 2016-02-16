@@ -123,63 +123,57 @@ function text_border(s){
     }
 }
 function highlight_all(e,cb){
+    var
+        highlighters=[{
+            header:'highlightCpp.js',
+            selector:'.highlighted_cpp',
+            functionName:'highlightCpp',
+        },{
+            header:'highlightHtml.js',
+            selector:'.highlighted_html',
+            functionName:'highlightHtml',
+        },{
+            header:'highlightJs.js',
+            selector:'.highlighted_js',
+            functionName:'highlightJs',
+        },{
+            header:'highlightTex.js',
+            selector:'.highlighted_tex',
+            functionName:'highlightTex',
+        }]
     e=e||document
-    countdownToCallback.count=1+4
-    modules.require('highlightCpp.js',()=>{
-        var a,i
-        a=e.getElementsByClassName('highlighted_cpp')
-        countdownToCallback.count+=a.length
-        for(i=0;i<a.length;i++)(e=>{
-            syntaxHighlighter.highlightCpp(e.textContent,(err,res)=>{
-                e.innerHTML=res
-                if(!e.classList.contains('bordered'))
-                    e.style.visibility=''
+    countdownToCallback.count=1+2*highlighters.length
+    highlighters.forEach(highlighter=>{
+        modules.require(highlighter.header,()=>{
+            ;(()=>{
+                var a,i
+                a=e.querySelectorAll('div'+highlighter.selector)
+                countdownToCallback.count+=a.length
+                for(i=0;i<a.length;i++)(e=>{
+                    syntaxHighlighter[highlighter.functionName](e.textContent,(err,res)=>{
+                        e.innerHTML=res
+                        if(!e.classList.contains('bordered'))
+                            e.style.visibility=''
+                        countdownToCallback()
+                    })
+                })(a[i])
                 countdownToCallback()
-            })
-        })(a[i])
-        countdownToCallback()
-    })
-    modules.require('highlightHtml.js',()=>{
-        var a,i
-        a=e.getElementsByClassName('highlighted_html')
-        countdownToCallback.count+=a.length
-        for(i=0;i<a.length;i++)(e=>{
-            syntaxHighlighter.highlightHtml(e.textContent,(err,res)=>{
-                e.innerHTML=res
-                if(!e.classList.contains('bordered'))
-                    e.style.visibility=''
+            })()
+            ;(()=>{
+                var a,i
+                a=e.querySelectorAll('script'+highlighter.selector)
+                countdownToCallback.count+=a.length
+                for(i=0;i<a.length;i++)(e=>{
+                    syntaxHighlighter[highlighter.functionName](e.innerHTML,(err,res)=>{
+                        e.innerHTML=res
+                        if(!e.classList.contains('bordered'))
+                            replaceByDiv(e)
+                        countdownToCallback()
+                    })
+                })(a[i])
                 countdownToCallback()
-            })
-        })(a[i])
-        countdownToCallback()
-    })
-    modules.require('highlightJs.js',()=>{
-        var a,i
-        a=e.getElementsByClassName('highlighted_js')
-        countdownToCallback.count+=a.length
-        for(i=0;i<a.length;i++)(e=>{
-            syntaxHighlighter.highlightJs(e.textContent,(err,res)=>{
-                e.innerHTML=res
-                if(!e.classList.contains('bordered'))
-                    e.style.visibility=''
-                countdownToCallback()
-            })
-        })(a[i])
-        countdownToCallback()
-    })
-    modules.require('highlightTex.js',()=>{
-        var a,i
-        a=e.getElementsByClassName('highlighted_tex')
-        countdownToCallback.count+=a.length
-        for(i=0;i<a.length;i++)(e=>{
-            syntaxHighlighter.highlightTex(e.textContent,(err,res)=>{
-                e.innerHTML=res
-                if(!e.classList.contains('bordered'))
-                    e.style.visibility=''
-                countdownToCallback()
-            })
-        })(a[i])
-        countdownToCallback()
+            })()
+        })
     })
     countdownToCallback()
     function countdownToCallback(){
@@ -189,16 +183,36 @@ function highlight_all(e,cb){
     }
 }
 function border_all(e,cb){
-    var a,i,source
     e=e||document
-    a=e.getElementsByClassName('bordered')
-    for(i=0;i<a.length;i++){
-        source=a[i].innerHTML
-        a[i].innerHTML=''
-        a[i].appendChild(text_border(source))
-        a[i].style.visibility=''
-    }
+    ;(()=>{
+        var a,i,source
+        a=e.querySelectorAll('div.bordered')
+        for(i=0;i<a.length;i++){
+            source=a[i].innerHTML
+            a[i].innerHTML=''
+            a[i].appendChild(text_border(source))
+        }
+    })()
+    ;(()=>{
+        var a,i,source
+        a=e.querySelectorAll('script.bordered')
+        for(i=0;i<a.length;i++){
+            source=a[i].innerHTML
+            a[i].innerHTML=''
+            a[i].appendChild(text_border(source))
+            replaceByDiv(a[i])
+        }
+    })()
     cb&&cb(null)
+}
+function replaceByDiv(e){
+    var div=document.createElement('div'),i
+    for(i=0;i<e.classList.length;i++)
+        div.classList.add(e.classList[i])
+    div.appendChild(e.firstChild)
+    e.parentNode.insertBefore(div,e)
+    e.parentNode.removeChild(e)
+    return div
 }
 function newlineDeletedAnalyze(matchingRules,source){
 /*
