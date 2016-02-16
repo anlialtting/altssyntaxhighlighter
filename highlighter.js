@@ -416,9 +416,14 @@ function analyze(matchingRules,source){
         }
         function simpleMatch(regex,result){
             var match
-            match=source.match(regex)[1]
-            syntax.list.push(match)
-            source=source.substring(match.length)
+            try{
+                match=source.match(regex)[1]
+                syntax.list.push(match)
+                source=source.substring(match.length)
+            }catch(e){
+                console.log(source,regex,source.match(regex))
+                throw''
+            }
         }
     }
     function matchSingleCharcter(result){

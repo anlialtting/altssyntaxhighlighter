@@ -94,10 +94,7 @@ span.highlighted_tex{
     font-weight:bold;
     line-height:0px;
 }
-.highlighted_html span.comment{
-    color:gray;
-}
-.highlighted_html span.operator{
+.highlighted_html span.startTag{
     color:green;
 }
 .highlighted_html span.tagname{
@@ -105,11 +102,20 @@ span.highlighted_tex{
     font-weight:bold;
     line-height:0px;
 }
-.highlighted_html span.property{
+.highlighted_html span.attribute{
     color:deeppink;
 }
-.highlighted_html span.string{
+.highlighted_html span.afterEqualInAttribute{
+    color:green;
+}
+.highlighted_html span.attributeValue{
     color:blue;
+}
+.highlighted_html span.endTag{
+    color:green;
+}
+.highlighted_html span.comment{
+    color:gray;
 }
 .highlighted_js span.comment{
     color:gray;
