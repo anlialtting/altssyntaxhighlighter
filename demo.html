@@ -27,6 +27,8 @@ var
     textarea=document.getElementById('textarea'),
     div=document.getElementById('div'),
     divCode=document.getElementById('divCode')
+divCode.textContent=textarea.value+(/\n$/.test(textarea.value)?'':'\n')
+syntaxHighlighter()
 textarea.oninput=()=>{
     divCode.textContent=textarea.value+(/\n$/.test(textarea.value)?'':'\n')
     syntaxHighlighter.highlight_all(div,()=>{
