@@ -20,6 +20,7 @@
     white-space:nowrap;
 }
 .bordered td.content{
+    padding-left:16px;
     white-space:pre;
     word-wrap:break-word;
 }
