@@ -178,13 +178,35 @@ function highlight_all(e,cb){
                         e.contentEditable=true
                     }
                     e.onkeydown=event=>{
+                        var cursorPosition
                         event.stopPropagation()
-                        setTimeout(()=>{
-                            syntaxHighlighter[highlighter.functionName](e.textContent,(err,res)=>{
-                                e.innerHTML=''
-                                e.appendChild(text_border(res))
-                            })
-                        },0)
+                        if(event.keyCode==37){
+                            event.preventDefault()
+                            cursorPosition=
+                                getCharacterOffsetWithin(document.getSelection().getRangeAt(0),e)
+                            goto(e,Math.max(0,cursorPosition-1))
+                        }
+                        if(event.keyCode==39){
+                            event.preventDefault()
+                            cursorPosition=
+                                getCharacterOffsetWithin(document.getSelection().getRangeAt(0),e)
+                            goto(e,Math.min(e.textContent.length,cursorPosition+1))
+                        }
+                    }
+                    e.oninput=event=>{
+                        var cursorPosition
+                        cursorPosition=getCharacterOffsetWithin(document.getSelection().getRangeAt(0),e)
+                        var a=e.querySelectorAll('.content')
+                        for(var j=0;j<a.length;j++)
+                            if(!/\n$/.test(a[j].textContent))
+                                a[j].textContent+='\n'
+                        if(!/\n$/.test(e.textContent))
+                            e.textContent+='\n'
+                        syntaxHighlighter[highlighter.functionName](e.textContent,(err,res)=>{
+                            e.innerHTML=''
+                            e.appendChild(text_border(res))
+                            goto(e,cursorPosition)
+                        })
                     }
                     syntaxHighlighter[highlighter.functionName](e.textContent,(err,res)=>{
                         e.innerHTML=res
@@ -192,6 +214,45 @@ function highlight_all(e,cb){
                             e.style.visibility=''
                         countdownToCallback()
                     })
+                    function getCharacterOffsetWithin(range,node){
+                        var treeWalker=document.createTreeWalker(
+                            node,
+                            NodeFilter.SHOW_TEXT,
+                            node=>{
+                                var nodeRange=document.createRange()
+                                nodeRange.selectNode(node)
+                                return nodeRange.compareBoundaryPoints(Range.END_TO_END,range)<1?
+                                    NodeFilter.FILTER_ACCEPT
+                                :
+                                    NodeFilter.FILTER_REJECT
+                            }
+                        )
+                        var charCount=0
+                        while(treeWalker.nextNode())
+                            charCount+=treeWalker.currentNode.length
+                        if(range.startContainer.nodeType==3)
+                            charCount+=range.startOffset
+                        return charCount
+                    }
+                    function goto(node,position){
+                        var treeWalker=document.createTreeWalker(
+                            node,
+                            NodeFilter.SHOW_TEXT
+                        )
+                        var charCount=0
+                        while(treeWalker.nextNode()){
+                            if(position<charCount+treeWalker.currentNode.length){
+                                var selection=window.getSelection()
+                                var range=document.createRange()
+                                range.setStart(treeWalker.currentNode,position-charCount)
+                                range.setEnd(treeWalker.currentNode,position-charCount)
+                                selection.removeAllRanges()
+                                selection.addRange(range)
+                                return
+                            }
+                            charCount+=treeWalker.currentNode.length
+                        }
+                    }
                 })(a[i])
                 countdownToCallback()
             })()
