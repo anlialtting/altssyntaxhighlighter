@@ -98,6 +98,7 @@ function text_border(s){
         table=document.createElement('table')
         lines=s.split('\n')
         lines.pop()
+        lines=lines.map(s=>s+'\n')
         lines.forEach((e,i)=>{
             table.appendChild(tr(i,e))
         })
@@ -173,6 +174,16 @@ function highlight_all(e,cb){
                 a=e.querySelectorAll('div'+highlighter.selector)
                 countdownToCallback.count+=a.length
                 for(i=0;i<a.length;i++)(e=>{
+                    e.contentEditable=true
+                    e.onkeydown=event=>{
+                        event.stopPropagation()
+                        setTimeout(()=>{
+                            syntaxHighlighter[highlighter.functionName](e.textContent,(err,res)=>{
+                                e.innerHTML=''
+                                e.appendChild(text_border(res))
+                            })
+                        },0)
+                    }
                     syntaxHighlighter[highlighter.functionName](e.textContent,(err,res)=>{
                         e.innerHTML=res
                         if(!e.classList.contains('bordered'))
