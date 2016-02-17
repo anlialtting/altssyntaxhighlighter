@@ -174,7 +174,9 @@ function highlight_all(e,cb){
                 a=e.querySelectorAll('div'+highlighter.selector)
                 countdownToCallback.count+=a.length
                 for(i=0;i<a.length;i++)(e=>{
-                    e.contentEditable=true
+                    e.ondblclick=()=>{
+                        e.contentEditable=true
+                    }
                     e.onkeydown=event=>{
                         event.stopPropagation()
                         setTimeout(()=>{
