@@ -28,9 +28,8 @@ function process(){
 function getResource(path,callback){
     var request=new XMLHttpRequest
     request.onreadystatechange=()=>{
-        if(request.readyState===4&&request.status===200){
+        if(request.readyState===4&&request.status===200)
             callback&&callback(null,request.responseText)
-        }
     }
     request.open('GET',path)
     request.send()
