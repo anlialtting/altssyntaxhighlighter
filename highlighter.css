@@ -1,8 +1,7 @@
 /*
     font-weight:bold; 總是要加上 line-height:0px; 忘記原因了
 */
-.lineNumber::before{
-    content:attr(data-line-number);
+body{
 }
 .bordered{
     word-break:break-all;
@@ -11,6 +10,9 @@
     table-layout:fixed;
     width:100%;
     font-family:monospace;
+}
+.bordered td.lineNumber::before{
+    content:attr(data-line-number);
 }
 .bordered td.lineNumber{
     text-align:right;

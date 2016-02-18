@@ -180,21 +180,30 @@ function highlight_all(e,cb){
                     e.onkeydown=event=>{
                         var cursorPosition
                         event.stopPropagation()
+                        console.log(event.keyCode)
                         if(event.keyCode==37){
                             event.preventDefault()
                             cursorPosition=
                                 getCharacterOffsetWithin(document.getSelection().getRangeAt(0),e)
-                            goto(e,Math.max(0,cursorPosition-1))
+                            goto(e,Math.max(0,cursorPosition-1),0)
+                        }
+                        if(event.keyCode==38){
+                            event.preventDefault()
+                            var evn=new Event('keydown',{keyCode:38})
+                            e.dispatchEvent(evn)
                         }
                         if(event.keyCode==39){
                             event.preventDefault()
                             cursorPosition=
                                 getCharacterOffsetWithin(document.getSelection().getRangeAt(0),e)
-                            goto(e,Math.min(e.textContent.length,cursorPosition+1))
+                            goto(e,Math.min(e.textContent.length,cursorPosition+1),0)
                         }
                     }
                     e.oninput=event=>{
-                        var cursorPosition
+                        var range,cursorPosition
+                        range=document.getSelection().getRangeAt(0)
+                        if(range.startContainer!=range.endContainer||range.startOffset!=range.endOffset)
+                            return
                         cursorPosition=getCharacterOffsetWithin(document.getSelection().getRangeAt(0),e)
                         var a=e.querySelectorAll('.content')
                         for(var j=0;j<a.length;j++)
@@ -205,7 +214,7 @@ function highlight_all(e,cb){
                         syntaxHighlighter[highlighter.functionName](e.textContent,(err,res)=>{
                             e.innerHTML=''
                             e.appendChild(text_border(res))
-                            goto(e,cursorPosition)
+                            goto(e,cursorPosition,0)
                         })
                     }
                     syntaxHighlighter[highlighter.functionName](e.textContent,(err,res)=>{
@@ -234,7 +243,7 @@ function highlight_all(e,cb){
                             charCount+=range.startOffset
                         return charCount
                     }
-                    function goto(node,position){
+                    function goto(node,position,which){
                         var treeWalker=document.createTreeWalker(
                             node,
                             NodeFilter.SHOW_TEXT
@@ -244,8 +253,14 @@ function highlight_all(e,cb){
                             if(position<charCount+treeWalker.currentNode.length){
                                 var selection=window.getSelection()
                                 var range=document.createRange()
-                                range.setStart(treeWalker.currentNode,position-charCount)
-                                range.setEnd(treeWalker.currentNode,position-charCount)
+                                if(which==0){
+                                    range.setStart(treeWalker.currentNode,position-charCount)
+                                    range.setEnd(treeWalker.currentNode,position-charCount)
+                                }else if(which==1){
+                                    range.setStart(treeWalker.currentNode,position-charCount)
+                                }else if(which==2){
+                                    range.setEnd(treeWalker.currentNode,position-charCount)
+                                }
                                 selection.removeAllRanges()
                                 selection.addRange(range)
                                 return
