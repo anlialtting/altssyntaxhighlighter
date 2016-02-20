@@ -108,6 +108,7 @@ function text_border(s){
         var
             tr
         tr=document.createElement('tr')
+        tr.dataset.lineNumber=i+1
         tr.appendChild(td_lineNumber(i))
         tr.appendChild(td_content(s))
         return tr
@@ -189,8 +190,6 @@ function highlight_all(e,cb){
                         }
                         if(event.keyCode==38){
                             event.preventDefault()
-                            var evn=new Event('keydown',{keyCode:38})
-                            e.dispatchEvent(evn)
                         }
                         if(event.keyCode==39){
                             event.preventDefault()
