@@ -42,6 +42,9 @@ span.highlighted_js{
 span.highlighted_tex{
     font-family:monospace;
 }
+.highlighted_cpp span.deletedNewline{
+    color:black;
+}
 .highlighted_cpp span.characterLiteral{
     color:blue;
 }
