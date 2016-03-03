@@ -69,26 +69,30 @@ function text_border(s){
     )/1e6)
     return table()
     function splitSourceByNewlineCharacter(source){
+        var div=document.createElement('div')
+        div.innerHTML=source
+        return splitElementByNewlineCharacter(div)
+    }
+    function splitElementByNewlineCharacter(e){
         var
             result='',
-            div=document.createElement('div'),
             i
-        div.innerHTML=source
-        for(i=0;i<div.childNodes.length;i++)(node=>
+        for(i=0;i<e.childNodes.length;i++){
+            let node=e.childNodes[i]
             result+=node.nodeType==Node.TEXT_NODE?
-                (s=>{
+                (()=>{
                     var div=document.createElement('div')
-                    div.textContent=s
+                    div.textContent=node.wholeText
                     return div.innerHTML
-                })(node.wholeText)
+                })()
             :
-                splitSourceByNewlineCharacter(
-                    node.innerHTML
+                splitElementByNewlineCharacter(
+                    node
                 ).split('\n').map(s=>(
                     node.innerHTML=s,
                     node.outerHTML
                 )).join('\n')
-        )(div.childNodes[i])
+        }
         return result
     }
     function table(){
