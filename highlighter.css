@@ -23,7 +23,7 @@ body{
 }
 .bordered td.content{
     padding-left:16px;
-    white-space:pre;
+    white-space:pre-wrap;
     word-wrap:break-word;
 }
 .highlighted_cpp{
