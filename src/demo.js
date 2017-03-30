@@ -4,16 +4,12 @@
         textarea=   document.getElementById('textarea'),
         div=        document.getElementById('div'),
         divCode=    document.getElementById('divCode')
-    divCode.textContent=tv()
-    syntaxHighlighter()
-    textarea.oninput=()=>{
-        divCode.textContent=tv()
-        syntaxHighlighter.highlight_all(div,()=>{
-            syntaxHighlighter.border_all(div,()=>{
-            })
-        })
-    }
-    function tv(){
-        return textarea.value+(/\n$/.test(textarea.value)?'':'\n')
+    update()
+    textarea.oninput=update
+    async function update(){
+        divCode.textContent=
+            textarea.value+(/\n$/.test(textarea.value)?'':'\n')
+        await syntaxHighlighter.highlight_all(div)
+        await syntaxHighlighter.border_all(div)
     }
 })()

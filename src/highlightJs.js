@@ -39,18 +39,15 @@ var
         },
     }
 syntaxHighlighter.highlightJs=highlightJs
-function highlightJs(source,cb){
-    db.require([
+async function highlightJs(source,cb){
+    await db.require([
         'keyword',
         'library',
-    ],err=>{
-        if(err)
-            return cb(err)
-        matchingRules.keyword.keywords=db.data.keyword
-        matchingRules.library.keywords=db.data.library
-        cb(null,syntaxHighlighter.highlight(
-            syntaxHighlighter.analyze(matchingRules,source)
-        ))
-    })
+    ])
+    matchingRules.keyword.keywords=db.data.keyword
+    matchingRules.library.keywords=db.data.library
+    cb(null,syntaxHighlighter.highlight(
+        syntaxHighlighter.analyze(matchingRules,source)
+    ))
 }
 })()

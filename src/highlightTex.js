@@ -43,22 +43,19 @@ var
         },
     }
 syntaxHighlighter.highlightTex=highlightTex
-function highlightTex(source,cb){
-    db.require([
+async function highlightTex(source,cb){
+    await db.require([
         'coreCommands',
         'documentClasses',
         'commonArguments',
         'commonPackages',
-    ],err=>{
-        if(err)
-            return cb(err)
-        matchingRules.coreCommands.keywords=db.data.coreCommands
-        matchingRules.documentClasses.keywords=db.data.documentClasses
-        matchingRules.commonArguments.keywords=db.data.commonArguments
-        matchingRules.commonPackages.keywords=db.data.commonPackages
-        cb(null,syntaxHighlighter.highlight(
-            syntaxHighlighter.analyze(matchingRules,source)
-        ))
-    })
+    ])
+    matchingRules.coreCommands.keywords=db.data.coreCommands
+    matchingRules.documentClasses.keywords=db.data.documentClasses
+    matchingRules.commonArguments.keywords=db.data.commonArguments
+    matchingRules.commonPackages.keywords=db.data.commonPackages
+    cb(null,syntaxHighlighter.highlight(
+        syntaxHighlighter.analyze(matchingRules,source)
+    ))
 }
 })()

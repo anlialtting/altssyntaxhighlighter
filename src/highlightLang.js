@@ -7,14 +7,11 @@ var
     matchingRules={
     }
 syntaxHighlighter.highlightLang=highlightLang
-function highlightLang(source,cb){
-    db.require([
-    ],err=>{
-        if(err)
-            return cb(err)
-        cb(null,syntaxHighlighter.highlight(
-            syntaxHighlighter.analyze(matchingRules,source)
-        ))
-    })
+async function highlightLang(source,cb){
+    await db.require([
+    ])
+    cb(null,syntaxHighlighter.highlight(
+        syntaxHighlighter.analyze(matchingRules,source)
+    ))
 }
 })()

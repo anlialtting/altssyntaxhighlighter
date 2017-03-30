@@ -93,22 +93,19 @@ var
         },
     }
 syntaxHighlighter.highlightCpp=highlightCpp
-function highlightCpp(source,cb){
-    db.require([
+async function highlightCpp(source,cb){
+    await db.require([
         'keywords',
         'library',
         'stlcontainers',
         'constants',
-    ],err=>{
-        if(err)
-            return cb(err)
-        matchingRules.keywords.keywords=db.data.keywords
-        matchingRules.library.keywords=db.data.library
-        matchingRules.stlcontainers.keywords=db.data.stlcontainers
-        matchingRules.constants.keywords=db.data.constants
-        cb(null,syntaxHighlighter.highlight(
-            syntaxHighlighter.newlineDeletedAnalyze(matchingRules,source)
-        ))
-    })
+    ])
+    matchingRules.keywords.keywords=db.data.keywords
+    matchingRules.library.keywords=db.data.library
+    matchingRules.stlcontainers.keywords=db.data.stlcontainers
+    matchingRules.constants.keywords=db.data.constants
+    cb(null,syntaxHighlighter.highlight(
+        syntaxHighlighter.newlineDeletedAnalyze(matchingRules,source)
+    ))
 }
 })()
