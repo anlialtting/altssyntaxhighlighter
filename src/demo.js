@@ -4,6 +4,11 @@
         textarea=   document.getElementById('textarea'),
         div=        document.getElementById('div'),
         divCode=    document.getElementById('divCode')
+    textarea.value=`#include<stdio.h>
+int main(){
+    return 0;
+}
+`
     update()
     textarea.oninput=update
     async function update(){
