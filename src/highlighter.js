@@ -1,11 +1,14 @@
 (()=>{
-var
+let
+    directoryOfThisScript
+if(typeof module!='undefined')
+    directoryOfThisScript=module.pathPrefix
+else
     directoryOfThisScript=
-        document.currentScript.getAttribute('src').replace(/[^\/]*$/,''),
+        document.currentScript.getAttribute('src').replace(/[^\/]*$/,'')
+let
     modules=new Cache(evalScript),
     options=window.syntaxHighlighter
-window.syntaxHighlighter=syntaxHighlighter
-document.currentScript.addEventListener('load',process)
 loadCSS('highlighter.css')
 syntaxHighlighter.Database=Database
 syntaxHighlighter.analyze=analyze
@@ -18,12 +21,6 @@ function syntaxHighlighter(){
     highlight_all(null,()=>{
         border_all()
     })
-}
-function process(){
-    if(options===undefined){
-        syntaxHighlighter()
-        return
-    }
 }
 function getResource(path,callback){
     var request=new XMLHttpRequest
@@ -595,4 +592,5 @@ Cache.prototype.require=function(key,cb){
     }
     cb(null)
 }
+return syntaxHighlighter
 })()

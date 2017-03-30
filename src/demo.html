@@ -1,10 +1,6 @@
 <!doctype html>
-<html>
-<head>
 <meta charset=utf-8>
 <title>Example</title>
-</head>
-<body>
 <div style=display:table;table-layout:fixed;width:100%;>
     <div style=display:table-row>
         <div style=display:table-cell;width:50%;padding:16px;>
@@ -21,23 +17,4 @@ int main(){
         </div>
     </div>
 </div>
-<script src=highlighter.js></script>
-<script>
-(()=>{
-var
-    textarea=document.getElementById('textarea'),
-    div=document.getElementById('div'),
-    divCode=document.getElementById('divCode')
-divCode.textContent=textarea.value+(/\n$/.test(textarea.value)?'':'\n')
-syntaxHighlighter()
-textarea.oninput=()=>{
-    divCode.textContent=textarea.value+(/\n$/.test(textarea.value)?'':'\n')
-    syntaxHighlighter.highlight_all(div,()=>{
-        syntaxHighlighter.border_all(div,()=>{
-        })
-    })
-}
-})()
-</script>
-</body>
-</html>
+<script src=https://cdn.rawgit.com/anliting/module/ff785a82a81a00a811403aa078abf09d8b4215e0/src/module.js async data-main=demo.js></script>
