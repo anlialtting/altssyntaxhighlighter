@@ -39,15 +39,15 @@ var
         },
     }
 syntaxHighlighter.highlightJs=highlightJs
-async function highlightJs(source,cb){
+async function highlightJs(source){
     await db.require([
         'keyword',
         'library',
     ])
     matchingRules.keyword.keywords=db.data.keyword
     matchingRules.library.keywords=db.data.library
-    cb(null,syntaxHighlighter.highlight(
+    return syntaxHighlighter.highlight(
         syntaxHighlighter.analyze(matchingRules,source)
-    ))
+    )
 }
 })()

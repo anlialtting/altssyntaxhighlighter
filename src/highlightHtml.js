@@ -56,11 +56,11 @@ var
         ],
     }
 syntaxHighlighter.highlightHtml=highlightHtml
-async function highlightHtml(source,cb){
+async function highlightHtml(source){
     await db.require([
     ])
-    cb(null,syntaxHighlighter.highlight(
+    return syntaxHighlighter.highlight(
         syntaxHighlighter.analyze(matchingRules,source)
-    ))
+    )
 }
 })()

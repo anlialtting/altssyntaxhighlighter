@@ -43,7 +43,7 @@ var
         },
     }
 syntaxHighlighter.highlightTex=highlightTex
-async function highlightTex(source,cb){
+async function highlightTex(source){
     await db.require([
         'coreCommands',
         'documentClasses',
@@ -54,8 +54,8 @@ async function highlightTex(source,cb){
     matchingRules.documentClasses.keywords=db.data.documentClasses
     matchingRules.commonArguments.keywords=db.data.commonArguments
     matchingRules.commonPackages.keywords=db.data.commonPackages
-    cb(null,syntaxHighlighter.highlight(
+    return syntaxHighlighter.highlight(
         syntaxHighlighter.analyze(matchingRules,source)
-    ))
+    )
 }
 })()

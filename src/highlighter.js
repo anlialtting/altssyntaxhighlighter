@@ -125,139 +125,132 @@ module.repository.html=module.importByPath('https://cdn.rawgit.com/anliting/alth
             }]
         e=e||document
         countdownToCallback.count=1
-        highlighters.map(highlighter=>{
+        highlighters.map(async highlighter=>{
             if(e.querySelectorAll(highlighter.selector).length==0)
                 return
             countdownToCallback.count+=3
-            modules.require(highlighter.header).then(()=>{
-                ;(()=>{
-                    var a,i
-                    a=e.querySelectorAll('span'+highlighter.selector)
-                    countdownToCallback.count+=a.length
-                    for(i=0;i<a.length;i++)(e=>{
-                        syntaxHighlighter[highlighter.functionName](e.textContent,(err,res)=>{
-                            e.innerHTML=res
-                            e.style.visibility=''
-                            countdownToCallback()
-                        })
-                    })(a[i])
+            await modules.require(highlighter.header)
+            ;(()=>{
+                var a,i
+                a=e.querySelectorAll('span'+highlighter.selector)
+                countdownToCallback.count+=a.length
+                for(i=0;i<a.length;i++)(async e=>{
+                    e.innerHTML=await syntaxHighlighter[highlighter.functionName](e.textContent)
+                    e.style.visibility=''
                     countdownToCallback()
-                })()
-                ;(()=>{
-                    var a,i
-                    a=e.querySelectorAll('div'+highlighter.selector)
-                    countdownToCallback.count+=a.length
-                    for(i=0;i<a.length;i++)(e=>{
-                        /*e.ondblclick=()=>{
-                            e.contentEditable=true
-                        }*/
-                        e.onkeydown=event=>{
-                            var cursorPosition
-                            event.stopPropagation()
-                            console.log(event.keyCode)
-                            if(event.keyCode==37){
-                                event.preventDefault()
-                                cursorPosition=
-                                    getCharacterOffsetWithin(document.getSelection().getRangeAt(0),e)
-                                goto(e,Math.max(0,cursorPosition-1),0)
-                            }
-                            if(event.keyCode==38){
-                                event.preventDefault()
-                            }
-                            if(event.keyCode==39){
-                                event.preventDefault()
-                                cursorPosition=
-                                    getCharacterOffsetWithin(document.getSelection().getRangeAt(0),e)
-                                goto(e,Math.min(e.textContent.length,cursorPosition+1),0)
-                            }
+                })(a[i])
+                countdownToCallback()
+            })()
+            ;(()=>{
+                var a,i
+                a=e.querySelectorAll('div'+highlighter.selector)
+                countdownToCallback.count+=a.length
+                for(i=0;i<a.length;i++)(async e=>{
+                    /*e.ondblclick=()=>{
+                        e.contentEditable=true
+                    }*/
+                    e.onkeydown=event=>{
+                        var cursorPosition
+                        event.stopPropagation()
+                        console.log(event.keyCode)
+                        if(event.keyCode==37){
+                            event.preventDefault()
+                            cursorPosition=
+                                getCharacterOffsetWithin(document.getSelection().getRangeAt(0),e)
+                            goto(e,Math.max(0,cursorPosition-1),0)
                         }
-                        e.oninput=event=>{
-                            var range,cursorPosition
-                            range=document.getSelection().getRangeAt(0)
-                            if(range.startContainer!=range.endContainer||range.startOffset!=range.endOffset)
+                        if(event.keyCode==38){
+                            event.preventDefault()
+                        }
+                        if(event.keyCode==39){
+                            event.preventDefault()
+                            cursorPosition=
+                                getCharacterOffsetWithin(document.getSelection().getRangeAt(0),e)
+                            goto(e,Math.min(e.textContent.length,cursorPosition+1),0)
+                        }
+                    }
+                    e.oninput=async event=>{
+                        var range,cursorPosition
+                        range=document.getSelection().getRangeAt(0)
+                        if(range.startContainer!=range.endContainer||range.startOffset!=range.endOffset)
+                            return
+                        cursorPosition=getCharacterOffsetWithin(document.getSelection().getRangeAt(0),e)
+                        var a=e.querySelectorAll('.content')
+                        for(var j=0;j<a.length;j++)
+                            if(!/\n$/.test(a[j].textContent))
+                                a[j].textContent+='\n'
+                        if(!/\n$/.test(e.textContent))
+                            e.textContent+='\n'
+                        e.innerHTML=''
+                        e.appendChild(text_border(
+                            await syntaxHighlighter[highlighter.functionName](e.textContent)
+                        ))
+                        goto(e,cursorPosition,0)
+                    }
+                    e.innerHTML=await syntaxHighlighter[highlighter.functionName](e.textContent)
+                    if(!e.classList.contains('bordered'))
+                        e.style.visibility=''
+                    countdownToCallback()
+                    function getCharacterOffsetWithin(range,node){
+                        var treeWalker=document.createTreeWalker(
+                            node,
+                            NodeFilter.SHOW_TEXT,
+                            node=>{
+                                var nodeRange=document.createRange()
+                                nodeRange.selectNode(node)
+                                return nodeRange.compareBoundaryPoints(Range.END_TO_END,range)<1?
+                                    NodeFilter.FILTER_ACCEPT
+                                :
+                                    NodeFilter.FILTER_REJECT
+                            }
+                        )
+                        var charCount=0
+                        while(treeWalker.nextNode())
+                            charCount+=treeWalker.currentNode.length
+                        if(range.startContainer.nodeType==3)
+                            charCount+=range.startOffset
+                        return charCount
+                    }
+                    function goto(node,position,which){
+                        var treeWalker=document.createTreeWalker(
+                            node,
+                            NodeFilter.SHOW_TEXT
+                        )
+                        var charCount=0
+                        while(treeWalker.nextNode()){
+                            if(position<charCount+treeWalker.currentNode.length){
+                                var selection=window.getSelection()
+                                var range=document.createRange()
+                                if(which==0){
+                                    range.setStart(treeWalker.currentNode,position-charCount)
+                                    range.setEnd(treeWalker.currentNode,position-charCount)
+                                }else if(which==1){
+                                    range.setStart(treeWalker.currentNode,position-charCount)
+                                }else if(which==2){
+                                    range.setEnd(treeWalker.currentNode,position-charCount)
+                                }
+                                selection.removeAllRanges()
+                                selection.addRange(range)
                                 return
-                            cursorPosition=getCharacterOffsetWithin(document.getSelection().getRangeAt(0),e)
-                            var a=e.querySelectorAll('.content')
-                            for(var j=0;j<a.length;j++)
-                                if(!/\n$/.test(a[j].textContent))
-                                    a[j].textContent+='\n'
-                            if(!/\n$/.test(e.textContent))
-                                e.textContent+='\n'
-                            syntaxHighlighter[highlighter.functionName](e.textContent,(err,res)=>{
-                                e.innerHTML=''
-                                e.appendChild(text_border(res))
-                                goto(e,cursorPosition,0)
-                            })
-                        }
-                        syntaxHighlighter[highlighter.functionName](e.textContent,(err,res)=>{
-                            e.innerHTML=res
-                            if(!e.classList.contains('bordered'))
-                                e.style.visibility=''
-                            countdownToCallback()
-                        })
-                        function getCharacterOffsetWithin(range,node){
-                            var treeWalker=document.createTreeWalker(
-                                node,
-                                NodeFilter.SHOW_TEXT,
-                                node=>{
-                                    var nodeRange=document.createRange()
-                                    nodeRange.selectNode(node)
-                                    return nodeRange.compareBoundaryPoints(Range.END_TO_END,range)<1?
-                                        NodeFilter.FILTER_ACCEPT
-                                    :
-                                        NodeFilter.FILTER_REJECT
-                                }
-                            )
-                            var charCount=0
-                            while(treeWalker.nextNode())
-                                charCount+=treeWalker.currentNode.length
-                            if(range.startContainer.nodeType==3)
-                                charCount+=range.startOffset
-                            return charCount
-                        }
-                        function goto(node,position,which){
-                            var treeWalker=document.createTreeWalker(
-                                node,
-                                NodeFilter.SHOW_TEXT
-                            )
-                            var charCount=0
-                            while(treeWalker.nextNode()){
-                                if(position<charCount+treeWalker.currentNode.length){
-                                    var selection=window.getSelection()
-                                    var range=document.createRange()
-                                    if(which==0){
-                                        range.setStart(treeWalker.currentNode,position-charCount)
-                                        range.setEnd(treeWalker.currentNode,position-charCount)
-                                    }else if(which==1){
-                                        range.setStart(treeWalker.currentNode,position-charCount)
-                                    }else if(which==2){
-                                        range.setEnd(treeWalker.currentNode,position-charCount)
-                                    }
-                                    selection.removeAllRanges()
-                                    selection.addRange(range)
-                                    return
-                                }
-                                charCount+=treeWalker.currentNode.length
                             }
+                            charCount+=treeWalker.currentNode.length
                         }
-                    })(a[i])
+                    }
+                })(a[i])
+                countdownToCallback()
+            })()
+            ;(()=>{
+                var a,i
+                a=e.querySelectorAll('script'+highlighter.selector)
+                countdownToCallback.count+=a.length
+                for(i=0;i<a.length;i++)(async e=>{
+                    e.innerHTML=await syntaxHighlighter[highlighter.functionName](e.innerHTML)
+                    if(!e.classList.contains('bordered'))
+                        replaceByDiv(e)
                     countdownToCallback()
-                })()
-                ;(()=>{
-                    var a,i
-                    a=e.querySelectorAll('script'+highlighter.selector)
-                    countdownToCallback.count+=a.length
-                    for(i=0;i<a.length;i++)(e=>{
-                        syntaxHighlighter[highlighter.functionName](e.innerHTML,(err,res)=>{
-                            e.innerHTML=res
-                            if(!e.classList.contains('bordered'))
-                                replaceByDiv(e)
-                            countdownToCallback()
-                        })
-                    })(a[i])
-                    countdownToCallback()
-                })()
-            })
+                })(a[i])
+                countdownToCallback()
+            })()
         })
         countdownToCallback()
         function countdownToCallback(){

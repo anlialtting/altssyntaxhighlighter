@@ -93,7 +93,7 @@ var
         },
     }
 syntaxHighlighter.highlightCpp=highlightCpp
-async function highlightCpp(source,cb){
+async function highlightCpp(source){
     await db.require([
         'keywords',
         'library',
@@ -104,8 +104,8 @@ async function highlightCpp(source,cb){
     matchingRules.library.keywords=db.data.library
     matchingRules.stlcontainers.keywords=db.data.stlcontainers
     matchingRules.constants.keywords=db.data.constants
-    cb(null,syntaxHighlighter.highlight(
+    return syntaxHighlighter.highlight(
         syntaxHighlighter.newlineDeletedAnalyze(matchingRules,source)
-    ))
+    )
 }
 })()
