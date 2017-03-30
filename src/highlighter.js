@@ -1,6 +1,12 @@
-module.repository.html=module.importByPath('https://cdn.rawgit.com/anliting/althea/51949680aa0615b90ff6d1b3df79ac7e6e516ad9/src/AltheaServer/HttpServer/files/lib/tools/html.js',{mode:1})
 ;(async()=>{
-    let html=await module.repository.html
+    module.repository=await module.importByPath('https://cdn.rawgit.com/anliting/althea/5c49592c8779c5f5387345a3d4da25a5de55fb26/src/AltheaServer/HttpServer/files/lib/repository.js',{mode:1})
+    let[
+        dom,
+        html,
+    ]=await Promise.all([
+        module.repository.althea.dom,
+        module.repository.althea.html,
+    ])
     let
         modules=new Cache(evalScript),
         options=window.syntaxHighlighter
@@ -21,7 +27,7 @@ module.repository.html=module.importByPath('https://cdn.rawgit.com/anliting/alth
     }
     async function loadCSS(path,callback){
         let res=await module.get(path)
-        var style=document.createElement('style')
+        var style=dom('style')
         style.innerHTML=res
         document.head.appendChild(style)
         callback&&callback(null)
@@ -37,7 +43,7 @@ module.repository.html=module.importByPath('https://cdn.rawgit.com/anliting/alth
         )/1e6)
         return table()
         function splitSourceByNewlineCharacter(source){
-            var div=document.createElement('div')
+            let div=dom('div')
             div.innerHTML=source
             return splitElementByNewlineCharacter(div)
         }
@@ -48,11 +54,7 @@ module.repository.html=module.importByPath('https://cdn.rawgit.com/anliting/alth
             for(i=0;i<e.childNodes.length;i++){
                 let node=e.childNodes[i]
                 result+=node.nodeType==Node.TEXT_NODE?
-                    (()=>{
-                        var div=document.createElement('div')
-                        div.textContent=node.wholeText
-                        return div.innerHTML
-                    })()
+                    html.encodeText(node.wholeText)
                 :
                     splitElementByNewlineCharacter(
                         node
@@ -64,47 +66,33 @@ module.repository.html=module.importByPath('https://cdn.rawgit.com/anliting/alth
             return result
         }
         function table(){
-            var
-                table,
-                lines
-            table=document.createElement('table')
-            lines=s.split('\n')
+            let lines=s.split('\n')
             lines.pop()
             lines=lines.map(s=>s+'\n')
-            lines.forEach((e,i)=>{
-                table.appendChild(tr(i,e))
-            })
-            return table
+            return dom('table',
+                lines.map((e,i)=>
+                    tr(i,e)
+                )
+            )
         }
         function tr(i,s){
-            var
-                tr
-            tr=document.createElement('tr')
-            tr.dataset.lineNumber=i+1
-            tr.appendChild(td_lineNumber(i))
-            tr.appendChild(td_content(s))
-            return tr
+            return dom('tr',
+                tr=>{tr.dataset.lineNumber=i+1},
+                td_lineNumber(i),
+                td_content(s)
+            )
         }
         function td_lineNumber(i){
-            var
-                td
-            td=document.createElement('td')
-            td.className='lineNumber'
-            td.dataset.lineNumber=i+1
-            td.style.width=6*(logCountOfLines+1)+'pt'
-            return td
+            return dom('td',{className:'lineNumber'},td=>{
+                td.dataset.lineNumber=i+1
+                td.style.width=6*(logCountOfLines+1)+'pt'
+            })
         }
         function td_content(s){
-            var
-                td
-            td=document.createElement('td')
-            td.className='content'
-            td.innerHTML=s
-            return td
+            return dom('td',{className:'content',innerHTML:s})
         }
     }
     async function highlight_all(e){
-        let cb,p=new Promise(rs=>cb=rs)
         var
             highlighters=[{
                 header:'highlightCpp.js',
@@ -124,141 +112,128 @@ module.repository.html=module.importByPath('https://cdn.rawgit.com/anliting/alth
                 functionName:'highlightTex',
             }]
         e=e||document
-        countdownToCallback.count=1
-        highlighters.map(async highlighter=>{
+        await Promise.all(highlighters.map(async highlighter=>{
             if(e.querySelectorAll(highlighter.selector).length==0)
                 return
-            countdownToCallback.count+=3
             await modules.require(highlighter.header)
-            ;(()=>{
-                var a,i
-                a=e.querySelectorAll('span'+highlighter.selector)
-                countdownToCallback.count+=a.length
-                for(i=0;i<a.length;i++)(async e=>{
-                    e.innerHTML=await syntaxHighlighter[highlighter.functionName](e.textContent)
-                    e.style.visibility=''
-                    countdownToCallback()
-                })(a[i])
-                countdownToCallback()
-            })()
-            ;(()=>{
-                var a,i
-                a=e.querySelectorAll('div'+highlighter.selector)
-                countdownToCallback.count+=a.length
-                for(i=0;i<a.length;i++)(async e=>{
-                    /*e.ondblclick=()=>{
-                        e.contentEditable=true
-                    }*/
-                    e.onkeydown=event=>{
-                        var cursorPosition
-                        event.stopPropagation()
-                        console.log(event.keyCode)
-                        if(event.keyCode==37){
-                            event.preventDefault()
-                            cursorPosition=
-                                getCharacterOffsetWithin(document.getSelection().getRangeAt(0),e)
-                            goto(e,Math.max(0,cursorPosition-1),0)
-                        }
-                        if(event.keyCode==38){
-                            event.preventDefault()
-                        }
-                        if(event.keyCode==39){
-                            event.preventDefault()
-                            cursorPosition=
-                                getCharacterOffsetWithin(document.getSelection().getRangeAt(0),e)
-                            goto(e,Math.min(e.textContent.length,cursorPosition+1),0)
-                        }
-                    }
-                    e.oninput=async event=>{
-                        var range,cursorPosition
-                        range=document.getSelection().getRangeAt(0)
-                        if(range.startContainer!=range.endContainer||range.startOffset!=range.endOffset)
-                            return
-                        cursorPosition=getCharacterOffsetWithin(document.getSelection().getRangeAt(0),e)
-                        var a=e.querySelectorAll('.content')
-                        for(var j=0;j<a.length;j++)
-                            if(!/\n$/.test(a[j].textContent))
-                                a[j].textContent+='\n'
-                        if(!/\n$/.test(e.textContent))
-                            e.textContent+='\n'
-                        e.innerHTML=''
-                        e.appendChild(text_border(
-                            await syntaxHighlighter[highlighter.functionName](e.textContent)
-                        ))
-                        goto(e,cursorPosition,0)
-                    }
-                    e.innerHTML=await syntaxHighlighter[highlighter.functionName](e.textContent)
-                    if(!e.classList.contains('bordered'))
-                        e.style.visibility=''
-                    countdownToCallback()
-                    function getCharacterOffsetWithin(range,node){
-                        var treeWalker=document.createTreeWalker(
-                            node,
-                            NodeFilter.SHOW_TEXT,
-                            node=>{
-                                var nodeRange=document.createRange()
-                                nodeRange.selectNode(node)
-                                return nodeRange.compareBoundaryPoints(Range.END_TO_END,range)<1?
-                                    NodeFilter.FILTER_ACCEPT
-                                :
-                                    NodeFilter.FILTER_REJECT
-                            }
-                        )
-                        var charCount=0
-                        while(treeWalker.nextNode())
-                            charCount+=treeWalker.currentNode.length
-                        if(range.startContainer.nodeType==3)
-                            charCount+=range.startOffset
-                        return charCount
-                    }
-                    function goto(node,position,which){
-                        var treeWalker=document.createTreeWalker(
-                            node,
-                            NodeFilter.SHOW_TEXT
-                        )
-                        var charCount=0
-                        while(treeWalker.nextNode()){
-                            if(position<charCount+treeWalker.currentNode.length){
-                                var selection=window.getSelection()
-                                var range=document.createRange()
-                                if(which==0){
-                                    range.setStart(treeWalker.currentNode,position-charCount)
-                                    range.setEnd(treeWalker.currentNode,position-charCount)
-                                }else if(which==1){
-                                    range.setStart(treeWalker.currentNode,position-charCount)
-                                }else if(which==2){
-                                    range.setEnd(treeWalker.currentNode,position-charCount)
-                                }
-                                selection.removeAllRanges()
-                                selection.addRange(range)
-                                return
-                            }
-                            charCount+=treeWalker.currentNode.length
-                        }
-                    }
-                })(a[i])
-                countdownToCallback()
-            })()
-            ;(()=>{
-                var a,i
-                a=e.querySelectorAll('script'+highlighter.selector)
-                countdownToCallback.count+=a.length
-                for(i=0;i<a.length;i++)(async e=>{
-                    e.innerHTML=await syntaxHighlighter[highlighter.functionName](e.innerHTML)
-                    if(!e.classList.contains('bordered'))
-                        replaceByDiv(e)
-                    countdownToCallback()
-                })(a[i])
-                countdownToCallback()
-            })()
-        })
-        countdownToCallback()
-        function countdownToCallback(){
-            if(--countdownToCallback.count)
-                return
-            cb&&cb(null)
+            await Promise.all([
+                f0(highlighter),
+                f1(highlighter),
+                f2(highlighter),
+            ])
+        }))
+        async function f0(highlighter){
+            await Promise.all([
+                ...e.querySelectorAll('span'+highlighter.selector)
+            ].map(async e=>{
+                e.innerHTML=await syntaxHighlighter[highlighter.functionName](e.textContent)
+                e.style.visibility=''
+            }))
         }
-        await p
+        async function f1(highlighter){
+            await Promise.all([
+                ...e.querySelectorAll('div'+highlighter.selector)
+            ].map(async e=>{
+                /*e.ondblclick=()=>{
+                    e.contentEditable=true
+                }*/
+                e.onkeydown=event=>{
+                    var cursorPosition
+                    event.stopPropagation()
+                    console.log(event.keyCode)
+                    if(event.keyCode==37){
+                        event.preventDefault()
+                        cursorPosition=
+                            getCharacterOffsetWithin(document.getSelection().getRangeAt(0),e)
+                        goto(e,Math.max(0,cursorPosition-1),0)
+                    }
+                    if(event.keyCode==38){
+                        event.preventDefault()
+                    }
+                    if(event.keyCode==39){
+                        event.preventDefault()
+                        cursorPosition=
+                            getCharacterOffsetWithin(document.getSelection().getRangeAt(0),e)
+                        goto(e,Math.min(e.textContent.length,cursorPosition+1),0)
+                    }
+                }
+                e.oninput=async event=>{
+                    var range,cursorPosition
+                    range=document.getSelection().getRangeAt(0)
+                    if(range.startContainer!=range.endContainer||range.startOffset!=range.endOffset)
+                        return
+                    cursorPosition=getCharacterOffsetWithin(document.getSelection().getRangeAt(0),e)
+                    var a=e.querySelectorAll('.content')
+                    for(var j=0;j<a.length;j++)
+                        if(!/\n$/.test(a[j].textContent))
+                            a[j].textContent+='\n'
+                    if(!/\n$/.test(e.textContent))
+                        e.textContent+='\n'
+                    e.innerHTML=''
+                    e.appendChild(text_border(
+                        await syntaxHighlighter[highlighter.functionName](e.textContent)
+                    ))
+                    goto(e,cursorPosition,0)
+                }
+                e.innerHTML=await syntaxHighlighter[highlighter.functionName](e.textContent)
+                if(!e.classList.contains('bordered'))
+                    e.style.visibility=''
+                function getCharacterOffsetWithin(range,node){
+                    var treeWalker=document.createTreeWalker(
+                        node,
+                        NodeFilter.SHOW_TEXT,
+                        node=>{
+                            var nodeRange=document.createRange()
+                            nodeRange.selectNode(node)
+                            return nodeRange.compareBoundaryPoints(Range.END_TO_END,range)<1?
+                                NodeFilter.FILTER_ACCEPT
+                            :
+                                NodeFilter.FILTER_REJECT
+                        }
+                    )
+                    var charCount=0
+                    while(treeWalker.nextNode())
+                        charCount+=treeWalker.currentNode.length
+                    if(range.startContainer.nodeType==3)
+                        charCount+=range.startOffset
+                    return charCount
+                }
+                function goto(node,position,which){
+                    var treeWalker=document.createTreeWalker(
+                        node,
+                        NodeFilter.SHOW_TEXT
+                    )
+                    var charCount=0
+                    while(treeWalker.nextNode()){
+                        if(position<charCount+treeWalker.currentNode.length){
+                            var selection=window.getSelection()
+                            var range=document.createRange()
+                            if(which==0){
+                                range.setStart(treeWalker.currentNode,position-charCount)
+                                range.setEnd(treeWalker.currentNode,position-charCount)
+                            }else if(which==1){
+                                range.setStart(treeWalker.currentNode,position-charCount)
+                            }else if(which==2){
+                                range.setEnd(treeWalker.currentNode,position-charCount)
+                            }
+                            selection.removeAllRanges()
+                            selection.addRange(range)
+                            return
+                        }
+                        charCount+=treeWalker.currentNode.length
+                    }
+                }
+            }))
+        }
+        async function f2(highlighter){
+            await Promise.all([
+                ...e.querySelectorAll('script'+highlighter.selector)
+            ].map(async e=>{
+                e.innerHTML=await syntaxHighlighter[highlighter.functionName](e.innerHTML)
+                if(!e.classList.contains('bordered'))
+                    replaceByDiv(e)
+            }))
+        }
     }
     async function border_all(e){
         e=e||document
@@ -284,7 +259,7 @@ module.repository.html=module.importByPath('https://cdn.rawgit.com/anliting/alth
         })()
     }
     function replaceByDiv(e){
-        var div=document.createElement('div'),i
+        var div=dom('div'),i
         for(i=0;i<e.classList.length;i++)
             div.classList.add(e.classList[i])
         div.appendChild(e.firstChild)
@@ -516,7 +491,7 @@ module.repository.html=module.importByPath('https://cdn.rawgit.com/anliting/alth
         this.status={}
         this.onLoad={}
     }
-    Cache.prototype.require=async function(key,cb){
+    Cache.prototype.require=async function(key){
         if(key instanceof Array)
             return Promise.all(key.map(key=>this.require(key)))
         if(!this.onLoad[key])
