@@ -1,5 +1,6 @@
 ;(async()=>{
-    module.repository=await module.importByPath('https://cdn.rawgit.com/anliting/althea/5c49592c8779c5f5387345a3d4da25a5de55fb26/src/AltheaServer/HttpServer/files/lib/repository.js',{mode:1})
+    if(!module.repository.althea)
+        module.repository.althea=(await module.importByPath('https://cdn.rawgit.com/anliting/althea/5c49592c8779c5f5387345a3d4da25a5de55fb26/src/AltheaServer/HttpServer/files/lib/repository.js',{mode:1})).althea
     module.repository.Syntax=module.shareImport('highlighter/Syntax.js')
     let[
         dom,
