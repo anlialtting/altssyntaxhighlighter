@@ -21,7 +21,7 @@
     ])
     let
         options=window.syntaxHighlighter
-    loadCSS('highlighter.css')
+    loadCSS('highlighter/highlighter.css')
     syntaxHighlighter.modules=new Cache(evalScript)
     syntaxHighlighter.Database=Database
     syntaxHighlighter.analyze=analyze
@@ -34,7 +34,7 @@
         await this.border_all()
     }
     async function evalScript(path){
-        return eval(await module.get(path))
+        return eval(await module.get(`highlighter/${path}`))
     }
     async function loadCSS(path){
         dom(document.head,
@@ -53,7 +53,9 @@
     }
     function Database(name){
         Cache.call(this,async(key)=>{
-            this.data[key]=JSON.parse(await module.get(`${name}/${key}.json`))
+            this.data[key]=JSON.parse(
+                await module.get(`highlighter/${name}/${key}.json`)
+            )
         })
         this.data={}
     }
