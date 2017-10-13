@@ -1,12 +1,13 @@
 /*
-Following keywords are listed on:
-https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Lexical_grammar
+The following keywords are listed on:
+http://www.ecma-international.org/ecma-262/8.0/index.html#sec-keywords
 */
 export default[
+    'await',
     'break',
     'case',
-    'class',
     'catch',
+    'class',
     'const',
     'continue',
     'debugger',
@@ -23,7 +24,6 @@ export default[
     'import',
     'in',
     'instanceof',
-    'let',
     'new',
     'return',
     'super',

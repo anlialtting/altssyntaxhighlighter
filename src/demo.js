@@ -1,5 +1,5 @@
 (async()=>{
-    let syntaxHighlighter=await module.shareImport('highlighter.js')
+    let syntaxHighlighter=await module.module('highlighter.mjs')
     let
         textarea=   document.getElementById('textarea'),
         div=        document.getElementById('div'),
