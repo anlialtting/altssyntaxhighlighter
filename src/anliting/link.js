@@ -14,4 +14,8 @@ async function link(input,file){
         paths:s=>skip.includes(s)&&s,
     })
 }
-link(`highlighter.mjs`,`highlighter.static.mjs`)
+;(async()=>{
+    await link(`highlighter.mjs`,`highlighter.static.mjs`)
+    // for rawgit
+    await link(`highlighter.mjs`,`highlighter.static.js`)
+})
