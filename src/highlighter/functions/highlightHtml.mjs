@@ -53,7 +53,7 @@ var
             }
         ],
     }
-async function highlightHtml(source){
+function highlightHtml(source){
     return this.highlight(
         this.analyze(matchingRules,source)
     )

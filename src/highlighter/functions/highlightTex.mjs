@@ -45,7 +45,7 @@ matchingRules.coreCommands.keywords=coreCommands
 matchingRules.documentClasses.keywords=documentClasses
 matchingRules.commonArguments.keywords=commonArguments
 matchingRules.commonPackages.keywords=commonPackages
-async function highlightTex(source){
+function highlightTex(source){
     return this.highlight(
         this.analyze(matchingRules,source)
     )

@@ -40,7 +40,7 @@ var
     }
 matchingRules.keyword.keywords=keyword
 matchingRules.library.keywords=library
-async function highlightJs(source){
+function highlightJs(source){
     return this.highlight(
         this.analyze(matchingRules,source)
     )

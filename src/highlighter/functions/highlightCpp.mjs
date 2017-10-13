@@ -98,7 +98,7 @@ matchingRules.keywords.keywords=keywords
 matchingRules.library.keywords=library
 matchingRules.stlcontainers.keywords=stlcontainers
 matchingRules.constants.keywords=constants
-async function highlightCpp(source){
+function highlightCpp(source){
     return this.highlight(
         this.newlineDeletedAnalyze(matchingRules,source)
     )

@@ -293,7 +293,7 @@ matchingRules.keywords.keywords=keywords;
 matchingRules.library.keywords=library;
 matchingRules.stlcontainers.keywords=stlcontainers;
 matchingRules.constants.keywords=constants;
-async function highlightCpp(source){
+function highlightCpp(source){
     return this.highlight(
         this.newlineDeletedAnalyze(matchingRules,source)
     )
@@ -353,7 +353,7 @@ var matchingRules$1={
             }
         ],
     };
-async function highlightHtml(source){
+function highlightHtml(source){
     return this.highlight(
         this.analyze(matchingRules$1,source)
     )
@@ -443,7 +443,7 @@ var matchingRules$2={
     };
 matchingRules$2.keyword.keywords=keyword;
 matchingRules$2.library.keywords=library$1;
-async function highlightJs(source){
+function highlightJs(source){
     return this.highlight(
         this.analyze(matchingRules$2,source)
     )
@@ -520,7 +520,7 @@ matchingRules$3.coreCommands.keywords=coreCommands;
 matchingRules$3.documentClasses.keywords=documentClasses;
 matchingRules$3.commonArguments.keywords=commonArguments;
 matchingRules$3.commonPackages.keywords=commonPackages;
-async function highlightTex(source){
+function highlightTex(source){
     return this.highlight(
         this.analyze(matchingRules$3,source)
     )
@@ -533,11 +533,10 @@ var functions = {
     highlightTex,
 };
 
-async function f1(e,highlighter){
-    let syntaxHighlighter=this;
-    await Promise.all([
+function f1(e,highlighter){
+    let syntaxHighlighter=this;[
         ...e.querySelectorAll('div'+highlighter.selector)
-    ].map(async e=>{
+    ].map(e=>{
         /*e.ondblclick=()=>{
             e.contentEditable=true
         }*/
@@ -561,7 +560,7 @@ async function f1(e,highlighter){
                 goto(e,Math.min(e.textContent.length,cursorPosition+1),0);
             }
         };
-        e.oninput=async event=>{
+        e.oninput=event=>{
             var range,cursorPosition;
             range=document.getSelection().getRangeAt(0);
             if(range.startContainer!=range.endContainer||range.startOffset!=range.endOffset)
@@ -574,13 +573,13 @@ async function f1(e,highlighter){
             if(!/\n$/.test(e.textContent))
                 e.textContent+='\n';
             dom(e,{innerHTML:''},text_border(
-                await functions[
+                functions[
                     highlighter.functionName
                 ].call(syntaxHighlighter,e.textContent)
             ));
             goto(e,cursorPosition,0);
         };
-        e.innerHTML=await functions[highlighter.functionName].call(syntaxHighlighter,e.textContent);
+        e.innerHTML=functions[highlighter.functionName].call(syntaxHighlighter,e.textContent);
         if(!e.classList.contains('bordered'))
             e.style.visibility='';
         function getCharacterOffsetWithin(range,node){
@@ -628,7 +627,7 @@ async function f1(e,highlighter){
                 charCount+=treeWalker.currentNode.length;
             }
         }
-    }));
+    });
 }
 
 let highlighters=[{
@@ -644,34 +643,32 @@ let highlighters=[{
         selector:'.highlighted_tex',
         functionName:'highlightTex',
     }];
-async function highlight_all(e){
+function highlight_all(e){
     e=e||document;
-    await Promise.all(highlighters.map(async highlighter=>{
+    highlighters.map(highlighter=>{
         if(e.querySelectorAll(highlighter.selector).length==0)
             return
-        await Promise.all([
-            f0.call(this,e,highlighter),
-            f1.call(this,e,highlighter),
-            f2.call(this,e,highlighter),
-        ]);
-    }));
+        f0.call(this,e,highlighter);
+        f1.call(this,e,highlighter);
+        f2.call(this,e,highlighter);
+    });
 }
-async function f0(e,highlighter){
-    await Promise.all([
+function f0(e,highlighter){
+    [
         ...e.querySelectorAll('span'+highlighter.selector)
-    ].map(async e=>{
-        e.innerHTML=await functions[highlighter.functionName].call(this,e.textContent);
+    ].map(e=>{
+        e.innerHTML=functions[highlighter.functionName].call(this,e.textContent);
         e.style.visibility='';
-    }));
+    });
 }
-async function f2(e,highlighter){
-    await Promise.all([
+function f2(e,highlighter){
+    [
         ...e.querySelectorAll('script'+highlighter.selector)
-    ].map(async e=>{
-        e.innerHTML=await functions[highlighter.functionName].call(this,e.innerHTML);
+    ].map(e=>{
+        e.innerHTML=functions[highlighter.functionName].call(this,e.innerHTML);
         if(!e.classList.contains('bordered'))
             replaceByDiv(e);
-    }));
+    });
 }
 
 let {dom: dom$2,html: html$1}=core.althea;
@@ -726,7 +723,7 @@ function text_border$1(s){
         })
     }
 }
-async function border_all(e){
+function border_all(e){
     e=e||document;
     for(let f of e.querySelectorAll('div.bordered'))
         dom$2(f,
@@ -973,9 +970,9 @@ syntaxHighlighter.newlineDeletedAnalyze=newlineDeletedAnalyze;
 syntaxHighlighter.highlight=highlight;
 syntaxHighlighter.highlight_all=highlight_all;
 syntaxHighlighter.border_all=border_all;
-async function syntaxHighlighter(){
-    await this.highlight_all();
-    await this.border_all();
+function syntaxHighlighter(){
+    this.highlight_all();
+    this.border_all();
 }
 function highlight(list){
     return list.map(item=>{

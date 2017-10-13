@@ -51,7 +51,7 @@ function text_border(s){
         })
     }
 }
-async function border_all(e){
+function border_all(e){
     e=e||document
     for(let f of e.querySelectorAll('div.bordered'))
         dom(f,

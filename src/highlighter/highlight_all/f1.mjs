@@ -1,9 +1,9 @@
 import functions from '../functions.mjs'
-async function f1(e,highlighter){
+function f1(e,highlighter){
     let syntaxHighlighter=this
-    await Promise.all([
+    ;[
         ...e.querySelectorAll('div'+highlighter.selector)
-    ].map(async e=>{
+    ].map(e=>{
         /*e.ondblclick=()=>{
             e.contentEditable=true
         }*/
@@ -27,7 +27,7 @@ async function f1(e,highlighter){
                 goto(e,Math.min(e.textContent.length,cursorPosition+1),0)
             }
         }
-        e.oninput=async event=>{
+        e.oninput=event=>{
             var range,cursorPosition
             range=document.getSelection().getRangeAt(0)
             if(range.startContainer!=range.endContainer||range.startOffset!=range.endOffset)
@@ -40,13 +40,13 @@ async function f1(e,highlighter){
             if(!/\n$/.test(e.textContent))
                 e.textContent+='\n'
             dom(e,{innerHTML:''},text_border(
-                await functions[
+                functions[
                     highlighter.functionName
                 ].call(syntaxHighlighter,e.textContent)
             ))
             goto(e,cursorPosition,0)
         }
-        e.innerHTML=await functions[highlighter.functionName].call(syntaxHighlighter,e.textContent)
+        e.innerHTML=functions[highlighter.functionName].call(syntaxHighlighter,e.textContent)
         if(!e.classList.contains('bordered'))
             e.style.visibility=''
         function getCharacterOffsetWithin(range,node){
@@ -94,6 +94,6 @@ async function f1(e,highlighter){
                 charCount+=treeWalker.currentNode.length
             }
         }
-    }))
+    })
 }
 export default f1

@@ -14,33 +14,31 @@ let
         selector:'.highlighted_tex',
         functionName:'highlightTex',
     }]
-async function highlight_all(e){
+function highlight_all(e){
     e=e||document
-    await Promise.all(highlighters.map(async highlighter=>{
+    highlighters.map(highlighter=>{
         if(e.querySelectorAll(highlighter.selector).length==0)
             return
-        await Promise.all([
-            f0.call(this,e,highlighter),
-            f1.call(this,e,highlighter),
-            f2.call(this,e,highlighter),
-        ])
-    }))
+        f0.call(this,e,highlighter)
+        f1.call(this,e,highlighter)
+        f2.call(this,e,highlighter)
+    })
 }
-async function f0(e,highlighter){
-    await Promise.all([
+function f0(e,highlighter){
+    ;[
         ...e.querySelectorAll('span'+highlighter.selector)
-    ].map(async e=>{
-        e.innerHTML=await functions[highlighter.functionName].call(this,e.textContent)
+    ].map(e=>{
+        e.innerHTML=functions[highlighter.functionName].call(this,e.textContent)
         e.style.visibility=''
-    }))
+    })
 }
-async function f2(e,highlighter){
-    await Promise.all([
+function f2(e,highlighter){
+    ;[
         ...e.querySelectorAll('script'+highlighter.selector)
-    ].map(async e=>{
-        e.innerHTML=await functions[highlighter.functionName].call(this,e.innerHTML)
+    ].map(e=>{
+        e.innerHTML=functions[highlighter.functionName].call(this,e.innerHTML)
         if(!e.classList.contains('bordered'))
             replaceByDiv(e)
-    }))
+    })
 }
 export default highlight_all

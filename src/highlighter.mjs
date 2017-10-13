@@ -13,9 +13,9 @@ syntaxHighlighter.newlineDeletedAnalyze=newlineDeletedAnalyze
 syntaxHighlighter.highlight=highlight
 syntaxHighlighter.highlight_all=highlight_all
 syntaxHighlighter.border_all=border_all
-async function syntaxHighlighter(){
-    await this.highlight_all()
-    await this.border_all()
+function syntaxHighlighter(){
+    this.highlight_all()
+    this.border_all()
 }
 function highlight(list){
     return list.map(item=>{
