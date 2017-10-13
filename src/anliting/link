@@ -1,1 +1,0 @@
-node $linker highlighter.js highlighter > highlighter.static.js
