@@ -1,29 +1,24 @@
 ;(async()=>{
-    if(!module.repository.althea)
-        module.repository.althea=(await module.importByPath('https://cdn.rawgit.com/anliting/althea/5c49592c8779c5f5387345a3d4da25a5de55fb26/src/AltheaServer/HttpServer/files/lib/repository.js',{mode:1})).althea
-    module.repository.Syntax=module.shareImport('highlighter/Syntax.js')
+    module.repository.Syntax=module.module('highlighter/Syntax.mjs')
     let[
-        dom,
-        html,
-        Syntax,
+        core,
         analyze,
         highlight_all,
         border_all,
         newlineDeletedAnalyze,
+        Cache,
     ]=await Promise.all([
-        module.repository.althea.dom,
-        module.repository.althea.html,
-        module.repository.Syntax,
-        module.shareImport('highlighter/analyze.js'),
-        module.shareImport('highlighter/highlight_all.js'),
-        module.shareImport('highlighter/border_all.js'),
-        module.shareImport('highlighter/newlineDeletedAnalyze.js'),
+        module.module('highlighter/core.mjs'),
+        module.module('highlighter/analyze.mjs'),
+        module.module('highlighter/highlight_all.mjs'),
+        module.module('highlighter/border_all.mjs'),
+        module.module('highlighter/newlineDeletedAnalyze.mjs'),
+        module.module('highlighter/Cache.mjs'),
     ])
+    let{dom,html}=core.althea
     let
         options=window.syntaxHighlighter
     loadCSS('highlighter/highlighter.css')
-    syntaxHighlighter.modules=new Cache(evalScript)
-    syntaxHighlighter.Database=Database
     syntaxHighlighter.analyze=analyze
     syntaxHighlighter.newlineDeletedAnalyze=newlineDeletedAnalyze
     syntaxHighlighter.highlight=highlight
@@ -33,12 +28,9 @@
         await this.highlight_all()
         await this.border_all()
     }
-    async function evalScript(path){
-        return eval(await module.get(`highlighter/${path}`))
-    }
     async function loadCSS(path){
-        dom(document.head,
-            dom('style',{innerHTML:await module.get(path)})
+        dom.head(
+            dom.style(await module.get(path))
         )
     }
     function highlight(list){
@@ -50,27 +42,6 @@
                     highlight(item.list)
                 }</span>`
         }).join('')
-    }
-    function Database(name){
-        Cache.call(this,async(key)=>{
-            this.data[key]=JSON.parse(
-                await module.get(`highlighter/${name}/${key}.json`)
-            )
-        })
-        this.data={}
-    }
-    Database.prototype=Object.create(Cache.prototype)
-    function Cache(load){
-        this.load=load
-        this.status={}
-        this.onLoad={}
-    }
-    Cache.prototype.require=async function(key){
-        if(key instanceof Array)
-            return Promise.all(key.map(key=>this.require(key)))
-        if(!this.onLoad[key])
-            this.onLoad[key]=this.load(key)
-        return this.onLoad[key]
     }
     return syntaxHighlighter
 })()
