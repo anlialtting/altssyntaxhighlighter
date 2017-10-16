@@ -1,6 +1,5 @@
 import functions from '../functions.mjs'
 function f1(e,highlighter){
-    let syntaxHighlighter=this
     ;[
         ...e.querySelectorAll('div'+highlighter.selector)
     ].map(e=>{
@@ -42,11 +41,11 @@ function f1(e,highlighter){
             dom(e,{innerHTML:''},text_border(
                 functions[
                     highlighter.functionName
-                ].call(syntaxHighlighter,e.textContent)
+                ](e.textContent)
             ))
             goto(e,cursorPosition,0)
         }
-        e.innerHTML=functions[highlighter.functionName].call(syntaxHighlighter,e.textContent)
+        e.innerHTML=functions[highlighter.functionName](e.textContent)
         if(!e.classList.contains('bordered'))
             e.style.visibility=''
         function getCharacterOffsetWithin(range,node){

@@ -1,7 +1,9 @@
-import keywords from            './cpp/keywords.mjs'
-import library from             './cpp/library.mjs'
-import stlcontainers from       './cpp/stlcontainers.mjs'
-import constants from           './cpp/constants.mjs'
+import newlineDeletedAnalyze from   '../newlineDeletedAnalyze.mjs'
+import highlight from               '../highlight.mjs'
+import keywords from                './cpp/keywords.mjs'
+import library from                 './cpp/library.mjs'
+import stlcontainers from           './cpp/stlcontainers.mjs'
+import constants from               './cpp/constants.mjs'
 var
     matchingRules={
         characterLiteral:{
@@ -99,8 +101,6 @@ matchingRules.library.keywords=library
 matchingRules.stlcontainers.keywords=stlcontainers
 matchingRules.constants.keywords=constants
 function highlightCpp(source){
-    return this.highlight(
-        this.newlineDeletedAnalyze(matchingRules,source)
-    )
+    return highlight(newlineDeletedAnalyze(matchingRules,source))
 }
 export default highlightCpp

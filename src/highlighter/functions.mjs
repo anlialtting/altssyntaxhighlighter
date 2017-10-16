@@ -3,8 +3,8 @@ import highlightHtml from './functions/highlightHtml.mjs'
 import highlightJs from './functions/highlightJs.mjs'
 import highlightTex from './functions/highlightTex.mjs'
 export default{
-    highlightCpp,
-    highlightHtml,
-    highlightJs,
-    highlightTex,
+    cpp:    highlightCpp,
+    html:   highlightHtml,
+    js:     highlightJs,
+    tex:    highlightTex,
 }

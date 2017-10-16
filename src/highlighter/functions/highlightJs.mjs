@@ -1,3 +1,5 @@
+import analyze from     '../analyze.mjs'
+import highlight from   '../highlight.mjs'
 import keyword from './js/keyword.mjs'
 import library from './js/library.mjs'
 var
@@ -41,8 +43,6 @@ var
 matchingRules.keyword.keywords=keyword
 matchingRules.library.keywords=library
 function highlightJs(source){
-    return this.highlight(
-        this.analyze(matchingRules,source)
-    )
+    return highlight(analyze(matchingRules,source))
 }
 export default highlightJs

@@ -1,7 +1,9 @@
-import coreCommands from            './tex/coreCommands.mjs'
-import documentClasses from         './tex/documentClasses.mjs'
-import commonArguments from         './tex/commonArguments.mjs'
-import commonPackages from          './tex/commonPackages.mjs'
+import analyze from             '../analyze.mjs'
+import highlight from           '../highlight.mjs'
+import coreCommands from        './tex/coreCommands.mjs'
+import documentClasses from     './tex/documentClasses.mjs'
+import commonArguments from     './tex/commonArguments.mjs'
+import commonPackages from      './tex/commonPackages.mjs'
 var
     matchingRules={
         comment:{
@@ -46,8 +48,6 @@ matchingRules.documentClasses.keywords=documentClasses
 matchingRules.commonArguments.keywords=commonArguments
 matchingRules.commonPackages.keywords=commonPackages
 function highlightTex(source){
-    return this.highlight(
-        this.analyze(matchingRules,source)
-    )
+    return highlight(analyze(matchingRules,source))
 }
 export default highlightTex

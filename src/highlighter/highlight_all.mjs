@@ -3,32 +3,32 @@ import functions from './functions.mjs'
 let
     highlighters=[{
         selector:'.highlighted_cpp',
-        functionName:'highlightCpp',
+        functionName:'cpp',
     },{
         selector:'.highlighted_html',
-        functionName:'highlightHtml',
+        functionName:'html',
     },{
         selector:'.highlighted_js',
-        functionName:'highlightJs',
+        functionName:'js',
     },{
         selector:'.highlighted_tex',
-        functionName:'highlightTex',
+        functionName:'tex',
     }]
 function highlight_all(e){
     e=e||document
     highlighters.map(highlighter=>{
         if(e.querySelectorAll(highlighter.selector).length==0)
             return
-        f0.call(this,e,highlighter)
-        f1.call(this,e,highlighter)
-        f2.call(this,e,highlighter)
+        f0(e,highlighter)
+        f1(e,highlighter)
+        f2(e,highlighter)
     })
 }
 function f0(e,highlighter){
     ;[
         ...e.querySelectorAll('span'+highlighter.selector)
     ].map(e=>{
-        e.innerHTML=functions[highlighter.functionName].call(this,e.textContent)
+        e.innerHTML=functions[highlighter.functionName](e.textContent)
         e.style.visibility=''
     })
 }
@@ -36,7 +36,7 @@ function f2(e,highlighter){
     ;[
         ...e.querySelectorAll('script'+highlighter.selector)
     ].map(e=>{
-        e.innerHTML=functions[highlighter.functionName].call(this,e.innerHTML)
+        e.innerHTML=functions[highlighter.functionName](e.innerHTML)
         if(!e.classList.contains('bordered'))
             replaceByDiv(e)
     })

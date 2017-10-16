@@ -1,3 +1,4 @@
+import analyze from './analyze.mjs'
 import Syntax from './Syntax.mjs'
 function newlineDeletedAnalyze(matchingRules,source){
 /*
@@ -11,7 +12,7 @@ N3242 2.2.2
     var
         result=[],
         a=source.split('\\\n'),
-    source=this.analyze(matchingRules,a.join(''))
+    source=analyze(matchingRules,a.join(''))
     a=a.map(s=>s.length)
     a.pop()
     dfs(source,result,a)
