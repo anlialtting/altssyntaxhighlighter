@@ -1,7 +1,7 @@
-import analyze from     '../analyze.mjs'
-import highlight from   '../highlight.mjs'
-import keyword from './js/keyword.mjs'
-import library from './js/library.mjs'
+import analyze from     './analyze.mjs'
+import highlight from   './highlight.mjs'
+import keyword from     './js/keyword.mjs'
+import library from     './js/library.mjs'
 var
     matchingRules={
         comment:[

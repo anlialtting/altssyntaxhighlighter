@@ -1,5 +1,5 @@
-import analyze from     '../analyze.mjs'
-import highlight from   '../highlight.mjs'
+import analyze from     './analyze.mjs'
+import highlight from   './highlight.mjs'
 var
     matchingRules={
         startTag:{

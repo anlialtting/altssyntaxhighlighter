@@ -1,13 +1,26 @@
-import core from './core.mjs'
-let{html}=core.althea
-function highlight(list){
-    return list.map(item=>{
-        if(typeof item=='string')
-            return html.encodeText(item)
-        else if(typeof item=='object')
-            return `<span class=${item.syntaxName}>${
-                highlight(item.list)
-            }</span>`
-    }).join('')
+import cpp from         './highlight/cpp.mjs'
+import html from        './highlight/html.mjs'
+import js from          './highlight/js.mjs'
+import tex from         './highlight/tex.mjs'
+import typeset from     './typeset.mjs'
+let languages={
+    cpp,
+    html,
+    js,
+    tex,
 }
-export default highlight
+function Highlighted(lang,s){
+    this.lang=lang
+    this.s=s
+}
+Highlighted.prototype.toString=function(){
+    return `<span class=highlighted_${this.lang}>${
+        languages[this.lang](this.s)
+    }</span>`
+}
+Highlighted.prototype.typeset=function(){
+    return typeset(this.toString())
+}
+export default new Proxy({},{get:(t,k)=>
+    s=>new Highlighted(k,s)
+})

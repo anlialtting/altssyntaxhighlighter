@@ -8,44 +8,38 @@ var style = `
 /*
     font-weight:bold; 總是要加上 line-height:0px; 忘記原因了
 */
-.bordered{
+.typeset{
     word-break:break-all;
 }
-.bordered table{
+.typeset.table{
+    display:table;
     table-layout:fixed;
     width:100%;
     font-family:monospace;
     text-align:left;
 }
-.bordered td.lineNumber::before{
+.typeset .tableRow{
+    display:table-row;
+}
+.typeset .lineNumber::before{
     content:attr(data-line-number);
 }
-.bordered td.lineNumber{
+.typeset .lineNumber{
+    display:table-cell;
     text-align:right;
     color:gray;
     vertical-align:top;
     height:12pt;
     white-space:nowrap;
 }
-.bordered td.content{
+.typeset .content{
+    display:table-cell;
     padding-left:16px;
     white-space:pre-wrap;
     word-wrap:break-word;
 }
 .highlighted_cpp{
     tab-size:4;
-    line-height:12pt;
-}
-span.highlighted_cpp{
-    font-family:monospace;
-}
-span.highlighted_html{
-    font-family:monospace;
-}
-span.highlighted_js{
-    font-family:monospace;
-}
-span.highlighted_tex{
     font-family:monospace;
 }
 .highlighted_cpp span.deletedNewline{
@@ -106,6 +100,9 @@ span.highlighted_tex{
     font-weight:bold;
     line-height:0px;
 }
+.highlighted_html{
+    font-family:monospace;
+}
 .highlighted_html span.startTag{
     color:green;
 }
@@ -129,6 +126,9 @@ span.highlighted_tex{
 .highlighted_html span.comment{
     color:gray;
 }
+.highlighted_js{
+    font-family:monospace;
+}
 .highlighted_js span.comment{
     color:gray;
 }
@@ -145,6 +145,9 @@ span.highlighted_tex{
 }
 .highlighted_js span.operator{
     color:red;
+}
+.highlighted_tex{
+    font-family:monospace;
 }
 .highlighted_tex span.comment{
     color:gray;
@@ -746,14 +749,7 @@ function highlightTex(source){
     return highlight$1(analyze(matchingRules$3,source))
 }
 
-var highlight = {
-    cpp:    highlightCpp,
-    html:   highlightHtml,
-    js:     highlightJs,
-    tex:    highlightTex,
-};
-
-let {dom: dom$1,html: html$1}=core.althea;
+let {dom: dom$1,html: html$2}=core.althea;
 function text_border(s){
     let
         countOfLines,
@@ -766,13 +762,13 @@ function text_border(s){
     return table()
     function splitSourceByNewlineCharacter(source){
         return splitElementByNewlineCharacter(
-            dom$1('div',{innerHTML:source})
-            )
+            dom$1.div({innerHTML:source})
+        )
     }
     function splitElementByNewlineCharacter(e){
         return[...e.childNodes].map(node=>
             node.nodeType==Node.TEXT_NODE?
-                html$1.encodeText(node.wholeText)
+                html$2.encodeText(node.wholeText)
             :
                 splitElementByNewlineCharacter(
                     node
@@ -785,26 +781,48 @@ function text_border(s){
     function table(){
         let lines=s.split('\n');
         lines.pop();
-        return dom$1('table',
+        return dom$1.div({className:'typeset table'},
             lines.map(s=>s+'\n').map((e,i)=>
                 tr(i,e)
             )
         )
     }
     function tr(i,s){
-        return dom$1('tr',
+        return dom$1.div({className:'tableRow'},
             tr=>{tr.dataset.lineNumber=i+1;},
             td_lineNumber(i),
-            dom$1('td',{className:'content',innerHTML:s})
+            dom$1.div({className:'content',innerHTML:s})
         )
     }
     function td_lineNumber(i){
-        return dom$1('td',{className:'lineNumber'},td=>{
+        return dom$1.div({className:'lineNumber'},td=>{
             td.dataset.lineNumber=i+1;
             td.style.width=6*(logCountOfLines+1)+'pt';
         })
     }
 }
+
+let languages={
+    cpp: highlightCpp,
+    html: highlightHtml,
+    js: highlightJs,
+    tex: highlightTex,
+};
+function Highlighted(lang,s){
+    this.lang=lang;
+    this.s=s;
+}
+Highlighted.prototype.toString=function(){
+    return `<span class=highlighted_${this.lang}>${
+        languages[this.lang](this.s)
+    }</span>`
+};
+Highlighted.prototype.typeset=function(){
+    return text_border(this.toString())
+};
+var highlight = new Proxy({},{get:(t,k)=>
+    s=>new Highlighted(k,s)
+});
 
 let {dom}=core.althea;
 dom.head(dom.style(style));
@@ -813,4 +831,5 @@ var highlighter = {
     typeset: text_border,
 };
 
+export { highlight, text_border as typeset };
 export default highlighter;

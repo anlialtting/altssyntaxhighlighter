@@ -12,8 +12,8 @@ function text_border(s){
     return table()
     function splitSourceByNewlineCharacter(source){
         return splitElementByNewlineCharacter(
-            dom('div',{innerHTML:source})
-            )
+            dom.div({innerHTML:source})
+        )
     }
     function splitElementByNewlineCharacter(e){
         return[...e.childNodes].map(node=>
@@ -31,21 +31,21 @@ function text_border(s){
     function table(){
         let lines=s.split('\n')
         lines.pop()
-        return dom('table',
+        return dom.div({className:'typeset table'},
             lines.map(s=>s+'\n').map((e,i)=>
                 tr(i,e)
             )
         )
     }
     function tr(i,s){
-        return dom('tr',
+        return dom.div({className:'tableRow'},
             tr=>{tr.dataset.lineNumber=i+1},
             td_lineNumber(i),
-            dom('td',{className:'content',innerHTML:s})
+            dom.div({className:'content',innerHTML:s})
         )
     }
     function td_lineNumber(i){
-        return dom('td',{className:'lineNumber'},td=>{
+        return dom.div({className:'lineNumber'},td=>{
             td.dataset.lineNumber=i+1
             td.style.width=6*(logCountOfLines+1)+'pt'
         })

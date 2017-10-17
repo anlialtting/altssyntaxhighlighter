@@ -1,5 +1,5 @@
-import newlineDeletedAnalyze from   '../newlineDeletedAnalyze.mjs'
-import highlight from               '../highlight.mjs'
+import newlineDeletedAnalyze from   './newlineDeletedAnalyze.mjs'
+import highlight from               './highlight.mjs'
 import keywords from                './cpp/keywords.mjs'
 import library from                 './cpp/library.mjs'
 import stlcontainers from           './cpp/stlcontainers.mjs'

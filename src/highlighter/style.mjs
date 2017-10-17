@@ -2,44 +2,38 @@ export default`
 /*
     font-weight:bold; 總是要加上 line-height:0px; 忘記原因了
 */
-.bordered{
+.typeset{
     word-break:break-all;
 }
-.bordered table{
+.typeset.table{
+    display:table;
     table-layout:fixed;
     width:100%;
     font-family:monospace;
     text-align:left;
 }
-.bordered td.lineNumber::before{
+.typeset .tableRow{
+    display:table-row;
+}
+.typeset .lineNumber::before{
     content:attr(data-line-number);
 }
-.bordered td.lineNumber{
+.typeset .lineNumber{
+    display:table-cell;
     text-align:right;
     color:gray;
     vertical-align:top;
     height:12pt;
     white-space:nowrap;
 }
-.bordered td.content{
+.typeset .content{
+    display:table-cell;
     padding-left:16px;
     white-space:pre-wrap;
     word-wrap:break-word;
 }
 .highlighted_cpp{
     tab-size:4;
-    line-height:12pt;
-}
-span.highlighted_cpp{
-    font-family:monospace;
-}
-span.highlighted_html{
-    font-family:monospace;
-}
-span.highlighted_js{
-    font-family:monospace;
-}
-span.highlighted_tex{
     font-family:monospace;
 }
 .highlighted_cpp span.deletedNewline{
@@ -100,6 +94,9 @@ span.highlighted_tex{
     font-weight:bold;
     line-height:0px;
 }
+.highlighted_html{
+    font-family:monospace;
+}
 .highlighted_html span.startTag{
     color:green;
 }
@@ -123,6 +120,9 @@ span.highlighted_tex{
 .highlighted_html span.comment{
     color:gray;
 }
+.highlighted_js{
+    font-family:monospace;
+}
 .highlighted_js span.comment{
     color:gray;
 }
@@ -139,6 +139,9 @@ span.highlighted_tex{
 }
 .highlighted_js span.operator{
     color:red;
+}
+.highlighted_tex{
+    font-family:monospace;
 }
 .highlighted_tex span.comment{
     color:gray;
