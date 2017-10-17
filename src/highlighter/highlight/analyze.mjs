@@ -31,7 +31,9 @@ function analyze(matchingRules,source){
         )
     }
     function matchByRule(syntaxName,rule,result,root){
-        if(root&&rule.active==false)
+        if(!(
+            root?rule.root:1
+        ))
             return
         if(rule.keywords)
             return matchSyntaxByKeyword(

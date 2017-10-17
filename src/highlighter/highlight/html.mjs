@@ -3,54 +3,51 @@ import highlight from   './highlight.mjs'
 var
     matchingRules={
         startTag:{
+            root:1,
             headRegex:/^()<[a-z]/,
             tailRegex:/^(\>)/,
             contain:['headOfStartTag','attribute']
         },
         headOfStartTag:{
-            active:false,
             headRegex:/^()<[a-z]/,
             tailRegex:/^()[\ \>\n]/,
             contain:['tagname']
         },
         tagname:{
-            active:false,
             regex:/^([-A-Za-z]+)/,
         },
         attribute:{
-            active:false,
             headRegex:/^([-A-Za-z]+)/,
             tailRegex:/^()[\ \>\n]/,
             contain:['afterEqualInAttribute']
         },
         afterEqualInAttribute:{
-            active:false,
             headRegex:/^(=)/,
             tailRegex:/^()[\ \>\n]/,
             contain:['attributeValue'],
         },
         attributeValue:[{
-            active:false,
             headRegex:/^(')/,
             tailRegex:/^(')/,
         },{
-            active:false,
             headRegex:/^(")/,
             tailRegex:/^(")/,
         },{
-            active:false,
             headRegex:/^()/,
             tailRegex:/^()[\ \>\n]/,
         }],
         endTag:{
+            root:1,
             headRegex:/^(<\/)/,
             tailRegex:/^(\>)/,
             contain:['tagname'],
         },
         comment:[
             {
+                root:1,
                 regex:/^(\<!--(?:(?!--\>)(?:.|\n))*--\>)/,
             },{
+                root:1,
                 regex:/^(\<![^\>]*\>)/,
             }
         ],

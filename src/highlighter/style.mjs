@@ -140,6 +140,9 @@ export default`
 .highlighted_js span.operator{
     color:red;
 }
+.highlighted_js span.templateStringPlaceHolder{
+    color:black;
+}
 .highlighted_tex{
     font-family:monospace;
 }

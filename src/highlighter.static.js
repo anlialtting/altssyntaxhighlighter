@@ -146,6 +146,9 @@ var style = `
 .highlighted_js span.operator{
     color:red;
 }
+.highlighted_js span.templateStringPlaceHolder{
+    color:black;
+}
 .highlighted_tex{
     font-family:monospace;
 }
@@ -206,7 +209,9 @@ function analyze(matchingRules,source){
         )
     }
     function matchByRule(syntaxName,rule,result,root){
-        if(root&&rule.active==false)
+        if(!(
+            root?rule.root:1
+        ))
             return
         if(rule.keywords)
             return matchSyntaxByKeyword(
@@ -431,22 +436,28 @@ var constants = [
 
 var matchingRules={
         characterLiteral:{
+            root:1,
             regex:/^('(?:[^'\\]|\\.)')/,
         },
         comment:[
             {
+                root:1,
                 regex:/^(\/\/.*)\n/,
             },{
+                root:1,
                 regex:/^(\/\*(?:(?!\*\/)(?:.|\n))*\*\/)/,
             }
         ],
         rawStringLiteral:{
+            root:1,
             regex:/^(R"([^\ \(\)\\]{0,16})\((?:(?!\)\2")(?:.|\n))*\)\2")/,
         },
         cStringLiteral:{
+            root:1,
             regex:/^("(?:[^"\\]|\\.)*")/,
         },
         identifier:{
+            root:1,
             regex:/^([A-Z_a-z][0-9A-Z_a-z]*)/,
             containKeywords:[
                 'keywords',
@@ -456,68 +467,60 @@ var matchingRules={
             ]
         },
         numberLiteral:{
+            root:1,
             regex:/^([0-9][0-9ELXelx.]*)/,
         },
         operator:{
+            root:1,
             regex:/^([()\[\]{}<>+\-*\/%,:;?&^=!~.|])/,
         },
         preprocessingDirective:{
+            root:1,
             headRegex:/^(#)/,
             tailRegex:/^()\n/,
             contain:['comment','includePD','definePD'],
         },
         includePD:{
-            active:false,
             headRegex:/^(include)/,
             tailRegex:/^()\n/,
             contain:['comment','headerName'],
         },
         headerName:[
             {
-                active:false,
                 headRegex:/^(<)/,
                 tailRegex:/^(>)/,
                 contain:['headerNameSlash'],
             },{
-                active:false,
                 headRegex:/^(")/,
                 tailRegex:/^(")/,
                 contain:['headerNameSlash'],
             },
         ],
         headerNameSlash:{
-            active:false,
             regex:/^(\/)/
         },
         definePD:{
-            active:false,
             headRegex:/^(define)/,
             tailRegex:/^()\n/,
             contain:['comment','operator','definePDKeyValue'],
         },
         definePDKeyValue:{
-            active:false,
             headRegex:/^([A-Z_a-z]+(?:\([^\)]*\))?)/,
             tailRegex:/^()\n/,
             contain:['comment','operator','definePDValue'],
         },
         definePDValue:{
-            active:false,
             headRegex:/^(.)/,
             tailRegex:/^()\n/,
             contain:['comment','operator'],
         },
         keywords:{
-            active:false,
         },
         library:{
-            active:false,
         },
         stlcontainers:{
-            active:false,
         },
         constants:{
-            active:false,
         },
     };
 matchingRules.keywords.keywords=keywords;
@@ -530,54 +533,51 @@ function highlightCpp(source){
 
 var matchingRules$1={
         startTag:{
+            root:1,
             headRegex:/^()<[a-z]/,
             tailRegex:/^(\>)/,
             contain:['headOfStartTag','attribute']
         },
         headOfStartTag:{
-            active:false,
             headRegex:/^()<[a-z]/,
             tailRegex:/^()[\ \>\n]/,
             contain:['tagname']
         },
         tagname:{
-            active:false,
             regex:/^([-A-Za-z]+)/,
         },
         attribute:{
-            active:false,
             headRegex:/^([-A-Za-z]+)/,
             tailRegex:/^()[\ \>\n]/,
             contain:['afterEqualInAttribute']
         },
         afterEqualInAttribute:{
-            active:false,
             headRegex:/^(=)/,
             tailRegex:/^()[\ \>\n]/,
             contain:['attributeValue'],
         },
         attributeValue:[{
-            active:false,
             headRegex:/^(')/,
             tailRegex:/^(')/,
         },{
-            active:false,
             headRegex:/^(")/,
             tailRegex:/^(")/,
         },{
-            active:false,
             headRegex:/^()/,
             tailRegex:/^()[\ \>\n]/,
         }],
         endTag:{
+            root:1,
             headRegex:/^(<\/)/,
             tailRegex:/^(\>)/,
             contain:['tagname'],
         },
         comment:[
             {
+                root:1,
                 regex:/^(\<!--(?:(?!--\>)(?:.|\n))*--\>)/,
             },{
+                root:1,
                 regex:/^(\<![^\>]*\>)/,
             }
         ],
@@ -631,43 +631,55 @@ var library$1 = [
     'alert',
 ];
 
-var matchingRules$2={
-        comment:[
-            {
-                regex:/^(\/\/.*\n)/,
-            },{
-                regex:/^(\/\*(?:.|\n)*\*\/)/,
-            }
-        ],
-        string:[
-            {
-                regex:/^('(?:[^'\\]|\\.)*')/,
-            },{
-                regex:/^("(?:[^"\\]|\\.)*")/,
-            },{
-                regex:/^(`(?:[^`\\]|\\.)*`)/,
-            }
-        ],
-        operator:{
-            regex:/^([!%&\(\)\*\+\,\-\.\/\:;\<=\>\?\[\]\^\{\|\}\~])/,
-        },
-        number:{
-            regex:/^([0-9]+(?:\.[0-9]+)?)/
-        },
-        identifier:{
-            regex:/^([A-Z_a-z]+)/,
-            containKeywords:[
-                'keyword',
-                'library',
-            ]
-        },
-        keyword:{
-            active:false,
-        },
-        library:{
-            active:false,
-        },
-    };
+let matchingRules$2={
+    comment:[
+        {
+            root:1,
+            regex:/^(\/\/.*\n)/,
+        },{
+            root:1,
+            regex:/^(\/\*(?:.|\n)*\*\/)/,
+        }
+    ],
+    string:[
+        {
+            root:1,
+            regex:/^('(?:[^'\\]|\\.)*')/,
+        },{
+            root:1,
+            regex:/^("(?:[^"\\]|\\.)*")/,
+        },{
+            root:1,
+            headRegex:/^(`)/,
+            tailRegex:/^(`)/,
+            contain:['templateStringPlaceHolder'],
+        }
+    ],
+    operator:{
+        root:1,
+        regex:/^([!%&\(\)\*\+\,\-\.\/\:;\<=\>\?\[\]\^\{\|\}\~])/,
+    },
+    number:{
+        root:1,
+        regex:/^([0-9]+(?:\.[0-9]+)?)/
+    },
+    identifier:{
+        root:1,
+        regex:/^([A-Z_a-z]+)/,
+        containKeywords:[
+            'keyword',
+            'library',
+        ]
+    },
+    keyword:{
+    },
+    library:{
+    },
+    templateStringPlaceHolder:{
+        headRegex:/^(\${)/,
+        tailRegex:/^(})/,
+    },
+};
 matchingRules$2.keyword.keywords=keyword;
 matchingRules$2.library.keywords=library$1;
 function highlightJs(source){
@@ -705,17 +717,21 @@ var commonPackages = [
 
 var matchingRules$3={
         comment:{
+            root:1,
             regex:/^(%.*\n)/,
         },
         command:{
+            root:1,
             headRegex:/^()\\/,
             tailRegex:/^()[^\\a-z]/,
             contain:['operator','commandName'],
         },
         operator:{
+            root:1,
             regex:/^([\\\[\]\{\}])/,
         },
         identifier:{
+            root:1,
             regex:/^([a-z]+)/,
             containKeywords:[
                 'documentClasses',
@@ -724,21 +740,16 @@ var matchingRules$3={
             ],
         },
         commandName:{
-            active:false,
             regex:/^([a-z]+)/,
             containKeywords:['coreCommands'],
         },
         coreCommands:{
-            active:false,
         },
         documentClasses:{
-            active:false,
         },
         commonArguments:{
-            active:false,
         },
         commonPackages:{
-            active:false,
         },
     };
 matchingRules$3.coreCommands.keywords=coreCommands;

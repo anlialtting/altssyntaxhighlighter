@@ -7,17 +7,21 @@ import commonPackages from      './tex/commonPackages.mjs'
 var
     matchingRules={
         comment:{
+            root:1,
             regex:/^(%.*\n)/,
         },
         command:{
+            root:1,
             headRegex:/^()\\/,
             tailRegex:/^()[^\\a-z]/,
             contain:['operator','commandName'],
         },
         operator:{
+            root:1,
             regex:/^([\\\[\]\{\}])/,
         },
         identifier:{
+            root:1,
             regex:/^([a-z]+)/,
             containKeywords:[
                 'documentClasses',
@@ -26,21 +30,16 @@ var
             ],
         },
         commandName:{
-            active:false,
             regex:/^([a-z]+)/,
             containKeywords:['coreCommands'],
         },
         coreCommands:{
-            active:false,
         },
         documentClasses:{
-            active:false,
         },
         commonArguments:{
-            active:false,
         },
         commonPackages:{
-            active:false,
         },
     }
 matchingRules.coreCommands.keywords=coreCommands
