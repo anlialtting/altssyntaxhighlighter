@@ -1,5 +1,5 @@
-import core from './core.mjs'
-let{dom,html}=core.althea
+import{althea}from './core.mjs'
+let{dom,html}=althea
 function text_border(s){
     let
         countOfLines,

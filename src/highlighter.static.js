@@ -1,4 +1,4 @@
-import althea from 'https://rawgit.com/anliting/althea/fc15503d703650e1e3a696260275cff0dcfc62d7/src/AltheaServer/HttpServer/files/lib/core.static.js';
+import althea from 'https://rawgit.com/anliting/althea/e7e8805ef158bb86edfb1cd31eda881c8b4bab79/src/AltheaServer/HttpServer/files/lib/core.static.js';
 
 var core = {
     althea
@@ -369,7 +369,7 @@ function dfs(source,result,a){
     }
 }
 
-let {html}=core.althea;
+let {html}=althea;
 function highlight$1(list){
     return list.map(item=>{
         if(typeof item=='string')
@@ -760,7 +760,7 @@ function highlightTex(source){
     return highlight$1(analyze(matchingRules$3,source))
 }
 
-let {dom: dom$1,html: html$2}=core.althea;
+let {dom: dom$1,html: html$2}=althea;
 function text_border(s){
     let
         countOfLines,
@@ -784,9 +784,7 @@ function text_border(s){
                 splitElementByNewlineCharacter(
                     node
                 ).split('\n').map(s=>(
-                    node.innerHTML=s,
-                    node.outerHTML
-                )).join('\n')
+                    node.innerHTML=s, node.outerHTML)).join('\n')
         ).join('')
     }
     function table(){

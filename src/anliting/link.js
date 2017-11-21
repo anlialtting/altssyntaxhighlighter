@@ -1,7 +1,7 @@
 let
     rollup=require('rollup'),
     skip=[
-        'https://rawgit.com/anliting/althea/fc15503d703650e1e3a696260275cff0dcfc62d7/src/AltheaServer/HttpServer/files/lib/core.static.js'
+        'https://rawgit.com/anliting/althea/e7e8805ef158bb86edfb1cd31eda881c8b4bab79/src/AltheaServer/HttpServer/files/lib/core.static.js'
     ]
 async function link(input,file){
     let bundle=await rollup.rollup({

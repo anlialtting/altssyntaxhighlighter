@@ -1,5 +1,5 @@
-import core from '../core.mjs'
-let{html}=core.althea
+import{althea}from '../core.mjs'
+let{html}=althea
 function highlight(list){
     return list.map(item=>{
         if(typeof item=='string')
