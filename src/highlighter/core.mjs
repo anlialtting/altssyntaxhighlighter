@@ -1,4 +1,4 @@
-import althea from 'https://rawgit.com/anliting/althea/e7e8805ef158bb86edfb1cd31eda881c8b4bab79/src/AltheaServer/HttpServer/files/lib/core.static.js'
+import althea from 'https://rawgit.com/anliting/althea/8ccb030c6f1917895314f493da16123642081760/src/AltheaServer/HttpServer/files/lib/core.static.js'
 export{
     althea
 }

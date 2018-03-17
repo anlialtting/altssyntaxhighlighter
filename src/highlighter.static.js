@@ -1,8 +1,8 @@
-import althea from 'https://rawgit.com/anliting/althea/e7e8805ef158bb86edfb1cd31eda881c8b4bab79/src/AltheaServer/HttpServer/files/lib/core.static.js';
+import althea from 'https://rawgit.com/anliting/althea/8ccb030c6f1917895314f493da16123642081760/src/AltheaServer/HttpServer/files/lib/core.static.js';
 
 var core = {
     althea
-};
+}
 
 var style = `
 /*
@@ -170,7 +170,7 @@ var style = `
 .highlighted_tex span.commonPackages{
     color:green;
 }
-`;
+`
 
 function Syntax(syntaxName,list){
     this.syntaxName=syntaxName;
@@ -369,14 +369,14 @@ function dfs(source,result,a){
     }
 }
 
-let {html}=althea;
-function highlight$1(list){
+let{html}=althea;
+function highlight(list){
     return list.map(item=>{
         if(typeof item=='string')
             return html.encodeText(item)
         else if(typeof item=='object')
             return `<span class=${item.syntaxName}>${
-                highlight$1(item.list)
+                highlight(item.list)
             }</span>`
     }).join('')
 }
@@ -391,7 +391,7 @@ var keywords = [
     'alignas','alignof','asm','auto','bool','break','case','catch','char','char16_t','char32_t','class','const','constexpr','const_cast','continue','default','delete','double','do','dynamic_cast','else','enum','explicit','export','extern','false','float','for','friend','goto','if','inline','int','long','mutable','namespace','new','noexcept','nullptr','operator','private','protected','public','register','reinterpret_cast','return','short','signed','sizeof','static','static_assert','static_cast','struct','switch','template','this','thread_local','throw','true','try','typedef','typeid','typename','union','unsigned','using','virtual','void','volatile','wchar_t','while',
     // Alternative representations
     'and','and_eq','bitand','bitor','compl','not','not_eq','or','or_eq','xor','xor_eq',
-];
+]
 
 /*
     `stringset_library` contains the following:
@@ -421,20 +421,21 @@ var library = [
     'linear_congruential_engine','mersenne_twister_engine','subtract_with_carry_engine','discard_block_engine','independent_bits_engine','shuffle_order_engine','minstd_rand0','minstd_rand','mt19937','mt19937_64','ranlux24_base','ranlux48_base','ranlux24','ranlux48','knuth_b','default_random_engine','random_device','seed_seq','RealType generate_canonical(URNG& g)','uniform_int_distribution','uniform_real_distribution','bernoulli_distribution','binomial_distribution','geometric_distribution','negative_binomial_distribution','poisson_distribution','exponential_distribution','gamma_distribution','weibull_distribution','extreme_value_distribution','normal_distribution','lognormal_distribution','chi_squared_distribution','cauchy_distribution','fisher_f_distribution','student_t_distribution','discrete_distribution','piecewise_constant_distribution','piecewise_linear_distribution',
     //
     'accumulate','adjacent_difference','advance','back','begin','chdir','chroot','cin','copy','copy','count','count_if','cout','distance','empty','end','endl','equal_range','execl','exit','fclose','fflush','fgets','FILE','fill','first','fopen','for_each','fork','fprintf','fputc','fputs','fputs','freopen','front','fscanf','getchar','getpagesize','gets','inner_product','int16_t','int32_t','int64_t','int8_t','uint16_t','uint32_t','uint64_t','uint8_t','ios_base','islower','isupper','iterator','kill','malloc','max','max_element','memset','min','min_element','nice','partial_sum','pclose','pop','popen','printf','ptrace','push','push_back','puts','random_shuffle','remove','reverse','scanf','second','setvbuf','size','sort','sprintf','sscanf','std','stdin','stdout','strcat','strcmp','strcpy','strlen','strncmp','swap','sync_with_stdio','top','unique','plus','equal','is_permutation','search','search_n','memcpy','log2','log10','log','exp','pow','round','floor','ceil','sqrt','clock','clock_t','erase','insert','plus','minus','multiplies','divides','modulus','negate','less','greater',
-];
+]
 
 var stlcontainers = [
     'array','bitset','deque','forward_list','list','map','multimap','multiset','pair','priority_queue','queue','set','stack','string','unordered_map','unordered_set','valarray','vector',
-];
+]
 
 var constants = [
     // Numerics library - Floating-Point Environment
     'FE_ALL_EXCEPT','FE_DIVBYZERO','FE_INEXACT','FE_INVALID','FE_OVERFLOW','FE_UNDERFLOW','FE_DOWNWARD','FE_TONEAREST','FE_TOWARDZERO','FE_UPWARD','FE_DFL_ENV',
     //
     'EOF','EXIT_FAILURE','EXIT_SUCCESS','INFINITY','INT_MAX','INT_MIN','LONG_MAX','LONG_MIN','NULL',
-];
+]
 
-var matchingRules={
+var
+    matchingRules={
         characterLiteral:{
             root:1,
             regex:/^('(?:[^'\\]|\\.)')/,
@@ -528,10 +529,11 @@ matchingRules.library.keywords=library;
 matchingRules.stlcontainers.keywords=stlcontainers;
 matchingRules.constants.keywords=constants;
 function highlightCpp(source){
-    return highlight$1(newlineDeletedAnalyze(matchingRules,source))
+    return highlight(newlineDeletedAnalyze(matchingRules,source))
 }
 
-var matchingRules$1={
+var
+    matchingRules$1={
         startTag:{
             root:1,
             headRegex:/^()<[a-z]/,
@@ -583,7 +585,7 @@ var matchingRules$1={
         ],
     };
 function highlightHtml(source){
-    return highlight$1(analyze(matchingRules$1,source))
+    return highlight(analyze(matchingRules$1,source))
 }
 
 /*
@@ -625,11 +627,11 @@ var keyword = [
     'while',
     'with',
     'yield',
-];
+]
 
 var library$1 = [
     'alert',
-];
+]
 
 let matchingRules$2={
     comment:[
@@ -683,7 +685,7 @@ let matchingRules$2={
 matchingRules$2.keyword.keywords=keyword;
 matchingRules$2.library.keywords=library$1;
 function highlightJs(source){
-    return highlight$1(analyze(matchingRules$2,source))
+    return highlight(analyze(matchingRules$2,source))
 }
 
 var coreCommands = [
@@ -697,7 +699,7 @@ var coreCommands = [
     'thispagestyle',
     'begin',
     'end'
-];
+]
 
 var documentClasses = [
     'article',
@@ -705,17 +707,18 @@ var documentClasses = [
     'book',
     'letter',
     'slides'
-];
+]
 
 var commonArguments = [
     'document',
-];
+]
 
 var commonPackages = [
     'fontspec',
-];
+]
 
-var matchingRules$3={
+var
+    matchingRules$3={
         comment:{
             root:1,
             regex:/^(%.*\n)/,
@@ -757,10 +760,10 @@ matchingRules$3.documentClasses.keywords=documentClasses;
 matchingRules$3.commonArguments.keywords=commonArguments;
 matchingRules$3.commonPackages.keywords=commonPackages;
 function highlightTex(source){
-    return highlight$1(analyze(matchingRules$3,source))
+    return highlight(analyze(matchingRules$3,source))
 }
 
-let {dom: dom$1,html: html$2}=althea;
+let{dom,html: html$1}=althea;
 function text_border(s){
     let
         countOfLines,
@@ -773,13 +776,13 @@ function text_border(s){
     return table()
     function splitSourceByNewlineCharacter(source){
         return splitElementByNewlineCharacter(
-            dom$1.div({innerHTML:source})
+            dom.div({innerHTML:source})
         )
     }
     function splitElementByNewlineCharacter(e){
         return[...e.childNodes].map(node=>
             node.nodeType==Node.TEXT_NODE?
-                html$2.encodeText(node.wholeText)
+                html$1.encodeText(node.wholeText)
             :
                 splitElementByNewlineCharacter(
                     node
@@ -790,21 +793,21 @@ function text_border(s){
     function table(){
         let lines=s.split('\n');
         lines.pop();
-        return dom$1.div({className:'typeset table'},
+        return dom.div({className:'typeset table'},
             lines.map(s=>s+'\n').map((e,i)=>
                 tr(i,e)
             )
         )
     }
     function tr(i,s){
-        return dom$1.div({className:'tableRow'},
+        return dom.div({className:'tableRow'},
             tr=>{tr.dataset.lineNumber=i+1;},
             td_lineNumber(i),
-            dom$1.div({className:'content',innerHTML:s})
+            dom.div({className:'content',innerHTML:s})
         )
     }
     function td_lineNumber(i){
-        return dom$1.div({className:'lineNumber'},td=>{
+        return dom.div({className:'lineNumber'},td=>{
             td.dataset.lineNumber=i+1;
             td.style.width=6*(logCountOfLines+1)+'pt';
         })
@@ -829,16 +832,16 @@ Highlighted.prototype.toString=function(){
 Highlighted.prototype.typeset=function(){
     return text_border(this.toString())
 };
-var highlight = new Proxy({},{get:(t,k)=>
+var highlight$1 = new Proxy({},{get:(t,k)=>
     s=>new Highlighted(k,s)
-});
+})
 
-let {dom}=core.althea;
-dom.head(dom.style(style));
+let{dom: dom$1}=core.althea;
+dom$1.head(dom$1.style(style));
 var highlighter = {
-    highlight,
+    highlight: highlight$1,
     typeset: text_border,
-};
+}
 
-export { highlight, text_border as typeset };
 export default highlighter;
+export { highlight$1 as highlight, text_border as typeset };
