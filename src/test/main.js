@@ -1,6 +1,6 @@
-import{dom}from 'https://rawgit.com/anliting/althea/7e4e4285807357154016f76fbca4e55de3c190d8/src/AltheaServer/HttpServer/files/lib/core.static.js';
-import syntax from '../highlighter.mjs'
-//import syntax from '../highlighter.static.mjs'
+import{dom}from'https://gitcdn.link/cdn/anliting/simple.js/09b9cd311f438c07fd1ac0ead044aed97158faf3/src/simple.static.js'
+//import syntax from '../highlighter.mjs'
+import syntax from '../highlighter.static.mjs'
 let code=[{
     type:'cpp',
     code:`#include<stdio.h>

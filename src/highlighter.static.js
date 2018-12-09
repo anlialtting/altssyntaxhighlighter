@@ -787,7 +787,9 @@ function text_border(s){
                 splitElementByNewlineCharacter(
                     node
                 ).split('\n').map(s=>(
-                    node.innerHTML=s, node.outerHTML)).join('\n')
+                    node.innerHTML=s,
+                    node.outerHTML
+                )).join('\n')
         ).join('')
     }
     function table(){
