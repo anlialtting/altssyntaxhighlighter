@@ -1,8 +1,56 @@
-import althea from 'https://rawgit.com/anliting/althea/8ccb030c6f1917895314f493da16123642081760/src/AltheaServer/HttpServer/files/lib/core.static.js';
-
-var core = {
-    althea
+function doe(n){
+    let
+        state=0,
+        p={
+            function:f=>f(n),
+            number,
+            object,
+            string,
+        };
+    transform([...arguments].slice(1));
+    return n
+    function number(n){
+        state=n;
+    }
+    function object(o){
+        if(o instanceof Array)
+            array();
+        else if(o instanceof Node)
+            n[state?'removeChild':'appendChild'](o);
+        else if(('length' in o)||o[Symbol.iterator]){
+            o=Array.from(o);
+            array();
+        }else if(state)
+            Object.entries(o).map(([a,b])=>n.setAttribute(a,b));
+        else
+            Object.assign(n,o);
+        function array(){
+            o.map(transform);
+        }
+    }
+    function string(s){
+        n.appendChild(document.createTextNode(s));
+    }
+    function transform(t){
+        for(let q;q=p[typeof t];t=q(t));
+    }
 }
+let methods={
+    html(){
+        return doe(document.documentElement,...arguments)
+    },
+    head(){
+        return doe(document.head,...arguments)
+    },
+    body(){
+        return doe(document.body,...arguments)
+    },
+};
+var doe$1 = new Proxy(doe,{
+    get:(t,p)=>methods[p]||function(){
+        return doe(document.createElement(p),...arguments)
+    }
+})
 
 var style = `
 /*
@@ -369,11 +417,24 @@ function dfs(source,result,a){
     }
 }
 
-let{html}=althea;
+/*
+Represent every character as character reference. This can be used to
+represent text in the <template> elements, escapable raw text elements,
+foreign elements, and normal elements. Note that it does not include raw
+text elements.
+https://www.w3.org/TR/2017/REC-html52-20171214/syntax.html#writing-html-documents-elements
+*/
+function escape(s){
+    let x='';
+    for(let i=0;i<s.length;i++)
+        x+=`&#${s.charCodeAt(i)};`;
+    return x
+}
+
 function highlight(list){
     return list.map(item=>{
         if(typeof item=='string')
-            return html.encodeText(item)
+            return escape(item)
         else if(typeof item=='object')
             return `<span class=${item.syntaxName}>${
                 highlight(item.list)
@@ -763,53 +824,52 @@ function highlightTex(source){
     return highlight(analyze(matchingRules$3,source))
 }
 
-let{dom,html: html$1}=althea;
 function text_border(s){
     let
         countOfLines,
         logCountOfLines;
     s=splitSourceByNewlineCharacter(s);
-    countOfLines=s.split('\n').length-1;
+    countOfLines=s.replace(/&#10;/g,'\n').split('\n').length-1;
     logCountOfLines=Math.floor(Math.round(
         Math.log(countOfLines)/Math.log(10)*1e6
     )/1e6);
     return table()
     function splitSourceByNewlineCharacter(source){
         return splitElementByNewlineCharacter(
-            dom.div({innerHTML:source})
+            doe$1.div({innerHTML:source})
         )
     }
     function splitElementByNewlineCharacter(e){
         return[...e.childNodes].map(node=>
             node.nodeType==Node.TEXT_NODE?
-                html$1.encodeText(node.wholeText)
+                escape(node.wholeText)
             :
                 splitElementByNewlineCharacter(
                     node
-                ).split('\n').map(s=>(
+                ).replace(/&#10;/g,'\n').split('\n').map(s=>(
                     node.innerHTML=s,
                     node.outerHTML
                 )).join('\n')
         ).join('')
     }
     function table(){
-        let lines=s.split('\n');
+        let lines=s.replace(/&#10;/g,'\n').split('\n');
         lines.pop();
-        return dom.div({className:'typeset table'},
+        return doe$1.div({className:'typeset table'},
             lines.map(s=>s+'\n').map((e,i)=>
                 tr(i,e)
             )
         )
     }
     function tr(i,s){
-        return dom.div({className:'tableRow'},
+        return doe$1.div({className:'tableRow'},
             tr=>{tr.dataset.lineNumber=i+1;},
             td_lineNumber(i),
-            dom.div({className:'content',innerHTML:s})
+            doe$1.div({className:'content',innerHTML:s})
         )
     }
     function td_lineNumber(i){
-        return dom.div({className:'lineNumber'},td=>{
+        return doe$1.div({className:'lineNumber'},td=>{
             td.dataset.lineNumber=i+1;
             td.style.width=6*(logCountOfLines+1)+'pt';
         })
@@ -838,8 +898,7 @@ var highlight$1 = new Proxy({},{get:(t,k)=>
     s=>new Highlighted(k,s)
 })
 
-let{dom: dom$1}=core.althea;
-dom$1.head(dom$1.style(style));
+doe$1.head(doe$1.style(style));
 var highlighter = {
     highlight: highlight$1,
     typeset: text_border,

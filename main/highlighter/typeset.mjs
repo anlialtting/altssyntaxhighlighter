@@ -1,51 +1,51 @@
-import{althea}from './core.mjs'
-let{dom,html}=althea
+import{escape}from'../../lib/cr.mjs'
+import doe from'../../lib/doe.mjs'
 function text_border(s){
     let
         countOfLines,
         logCountOfLines
     s=splitSourceByNewlineCharacter(s)
-    countOfLines=s.split('\n').length-1
+    countOfLines=s.replace(/&#10;/g,'\n').split('\n').length-1
     logCountOfLines=Math.floor(Math.round(
         Math.log(countOfLines)/Math.log(10)*1e6
     )/1e6)
     return table()
     function splitSourceByNewlineCharacter(source){
         return splitElementByNewlineCharacter(
-            dom.div({innerHTML:source})
+            doe.div({innerHTML:source})
         )
     }
     function splitElementByNewlineCharacter(e){
         return[...e.childNodes].map(node=>
             node.nodeType==Node.TEXT_NODE?
-                html.encodeText(node.wholeText)
+                escape(node.wholeText)
             :
                 splitElementByNewlineCharacter(
                     node
-                ).split('\n').map(s=>(
+                ).replace(/&#10;/g,'\n').split('\n').map(s=>(
                     node.innerHTML=s,
                     node.outerHTML
                 )).join('\n')
         ).join('')
     }
     function table(){
-        let lines=s.split('\n')
+        let lines=s.replace(/&#10;/g,'\n').split('\n')
         lines.pop()
-        return dom.div({className:'typeset table'},
+        return doe.div({className:'typeset table'},
             lines.map(s=>s+'\n').map((e,i)=>
                 tr(i,e)
             )
         )
     }
     function tr(i,s){
-        return dom.div({className:'tableRow'},
+        return doe.div({className:'tableRow'},
             tr=>{tr.dataset.lineNumber=i+1},
             td_lineNumber(i),
-            dom.div({className:'content',innerHTML:s})
+            doe.div({className:'content',innerHTML:s})
         )
     }
     function td_lineNumber(i){
-        return dom.div({className:'lineNumber'},td=>{
+        return doe.div({className:'lineNumber'},td=>{
             td.dataset.lineNumber=i+1
             td.style.width=6*(logCountOfLines+1)+'pt'
         })
