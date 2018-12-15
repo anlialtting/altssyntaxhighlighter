@@ -10,6 +10,4 @@ async function link(input,file){
 }
 ;(async()=>{
     await link(`highlighter.mjs`,`highlighter.static.mjs`)
-    // for rawgit
-    await link(`highlighter.mjs`,`highlighter.static.js`)
 })()
