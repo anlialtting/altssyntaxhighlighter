@@ -21,6 +21,9 @@ Highlighted.prototype.toString=function(){
 Highlighted.prototype.typeset=function(){
     return typeset(this.toString())
 }
-export default new Proxy({},{get:(t,k)=>
+function highlight(k,s){
+    return new Highlighted(k,s)
+}
+export default new Proxy(highlight,{get:(t,k)=>
     s=>new Highlighted(k,s)
 })

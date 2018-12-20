@@ -1,6 +1,6 @@
-import{dom}from'https://gitcdn.link/cdn/anliting/simple.js/09b9cd311f438c07fd1ac0ead044aed97158faf3/src/simple.static.js'
-//import syntax from '../highlighter.mjs'
-import syntax from '../highlighter.static.mjs'
+import doe from'../../lib/doe.mjs'
+import syntax from '../main.mjs'
+//import syntax from '../main.static.mjs'
 let code=[{
     type:'cpp',
     code:`#include<stdio.h>
@@ -28,9 +28,10 @@ int main(){
 \\end{document}
 `,
 },]
+doe.head(doe.style(syntax.style))
 code.map(({type,code})=>{
-    dom.body(dom(
-        syntax.highlight[type](code).typeset(),
+    doe.body(doe(
+        syntax.highlight(type,code).typeset(),
         n=>{n.style.margin='8px 0'}
     ))
 })

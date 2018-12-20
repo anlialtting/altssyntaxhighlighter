@@ -9,5 +9,5 @@ async function link(input,file){
     })
 }
 ;(async()=>{
-    await link(`highlighter.mjs`,`highlighter.static.mjs`)
+    await link(`main.mjs`,`main.static.mjs`)
 })()
