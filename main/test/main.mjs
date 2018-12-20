@@ -1,6 +1,6 @@
 import doe from'../../lib/doe.mjs'
-import syntax from '../main.mjs'
-//import syntax from '../main.static.mjs'
+import sh from '../main.mjs'
+//import sh from '../main.static.mjs'
 let code=[{
     type:'cpp',
     code:`#include<stdio.h>
@@ -28,10 +28,10 @@ int main(){
 \\end{document}
 `,
 },]
-doe.head(doe.style(syntax.style))
+doe.head(doe.style(sh.style))
 code.map(({type,code})=>{
     doe.body(doe(
-        syntax.highlight(type,code).typeset(),
+        sh.highlight(type,code).typeset(),
         n=>{n.style.margin='8px 0'}
     ))
 })

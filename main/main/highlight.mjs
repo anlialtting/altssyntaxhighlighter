@@ -14,7 +14,7 @@ function Highlighted(lang,s){
     this.s=s
 }
 Highlighted.prototype.toString=function(){
-    return `<span class=highlighted_${this.lang}>${
+    return`<span class=highlighted_${this.lang}>${
         languages[this.lang](this.s)
     }</span>`
 }
