@@ -1,4 +1,11 @@
-function doe(n){
+/*© An-Li Ting (anliting.com)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/function doe(n){
     let
         state=0,
         p={
@@ -50,7 +57,7 @@ var doe$1 = new Proxy(doe,{
     get:(t,p)=>methods[p]||function(){
         return doe(document.createElement(p),...arguments)
     }
-})
+});
 
 /*
     font-weight:bold; 總是要加上 line-height:0px; 忘記原因了
@@ -218,7 +225,7 @@ var style = `
 .highlighted_tex span.commonPackages{
     color:green;
 }
-`
+`;
 
 function Syntax(syntaxName,list){
     this.syntaxName=syntaxName;
@@ -328,12 +335,12 @@ function analyze(matchingRules,source){
         if(!headRegex.test(source))
             return
         let syntax=new Syntax(syntaxName);
-        simpleMatch(headRegex,syntax.list);
+        simpleMatch(headRegex);
         while(!source.match(tailRegex)&&(
             contain&&submatch()||
             matchSingleCharcter(syntax.list)
         ));
-        simpleMatch(tailRegex,syntax.list);
+        simpleMatch(tailRegex);
         result.push(syntax);
         return true
         function submatch(){
@@ -452,7 +459,7 @@ var keywords = [
     'alignas','alignof','asm','auto','bool','break','case','catch','char','char16_t','char32_t','class','const','constexpr','const_cast','continue','default','delete','double','do','dynamic_cast','else','enum','explicit','export','extern','false','float','for','friend','goto','if','inline','int','long','mutable','namespace','new','noexcept','nullptr','operator','private','protected','public','register','reinterpret_cast','return','short','signed','sizeof','static','static_assert','static_cast','struct','switch','template','this','thread_local','throw','true','try','typedef','typeid','typename','union','unsigned','using','virtual','void','volatile','wchar_t','while',
     // Alternative representations
     'and','and_eq','bitand','bitor','compl','not','not_eq','or','or_eq','xor','xor_eq',
-]
+];
 
 /*
     `stringset_library` contains the following:
@@ -482,18 +489,18 @@ var library = [
     'linear_congruential_engine','mersenne_twister_engine','subtract_with_carry_engine','discard_block_engine','independent_bits_engine','shuffle_order_engine','minstd_rand0','minstd_rand','mt19937','mt19937_64','ranlux24_base','ranlux48_base','ranlux24','ranlux48','knuth_b','default_random_engine','random_device','seed_seq','RealType generate_canonical(URNG& g)','uniform_int_distribution','uniform_real_distribution','bernoulli_distribution','binomial_distribution','geometric_distribution','negative_binomial_distribution','poisson_distribution','exponential_distribution','gamma_distribution','weibull_distribution','extreme_value_distribution','normal_distribution','lognormal_distribution','chi_squared_distribution','cauchy_distribution','fisher_f_distribution','student_t_distribution','discrete_distribution','piecewise_constant_distribution','piecewise_linear_distribution',
     //
     'accumulate','adjacent_difference','advance','back','begin','chdir','chroot','cin','copy','copy','count','count_if','cout','distance','empty','end','endl','equal_range','execl','exit','fclose','fflush','fgets','FILE','fill','first','fopen','for_each','fork','fprintf','fputc','fputs','fputs','freopen','front','fscanf','getchar','getpagesize','gets','inner_product','int16_t','int32_t','int64_t','int8_t','uint16_t','uint32_t','uint64_t','uint8_t','ios_base','islower','isupper','iterator','kill','malloc','max','max_element','memset','min','min_element','nice','partial_sum','pclose','pop','popen','printf','ptrace','push','push_back','puts','random_shuffle','remove','reverse','scanf','second','setvbuf','size','sort','sprintf','sscanf','std','stdin','stdout','strcat','strcmp','strcpy','strlen','strncmp','swap','sync_with_stdio','top','unique','plus','equal','is_permutation','search','search_n','memcpy','log2','log10','log','exp','pow','round','floor','ceil','sqrt','clock','clock_t','erase','insert','plus','minus','multiplies','divides','modulus','negate','less','greater',
-]
+];
 
 var stlcontainers = [
     'array','bitset','deque','forward_list','list','map','multimap','multiset','pair','priority_queue','queue','set','stack','string','unordered_map','unordered_set','valarray','vector',
-]
+];
 
 var constants = [
     // Numerics library - Floating-Point Environment
     'FE_ALL_EXCEPT','FE_DIVBYZERO','FE_INEXACT','FE_INVALID','FE_OVERFLOW','FE_UNDERFLOW','FE_DOWNWARD','FE_TONEAREST','FE_TOWARDZERO','FE_UPWARD','FE_DFL_ENV',
     //
     'EOF','EXIT_FAILURE','EXIT_SUCCESS','INFINITY','INT_MAX','INT_MIN','LONG_MAX','LONG_MIN','NULL',
-]
+];
 
 var
     matchingRules={
@@ -688,11 +695,11 @@ var keyword = [
     'while',
     'with',
     'yield',
-]
+];
 
 var library$1 = [
     'alert',
-]
+];
 
 let matchingRules$2={
     comment:[
@@ -760,7 +767,7 @@ var coreCommands = [
     'thispagestyle',
     'begin',
     'end'
-]
+];
 
 var documentClasses = [
     'article',
@@ -768,15 +775,15 @@ var documentClasses = [
     'book',
     'letter',
     'slides'
-]
+];
 
 var commonArguments = [
     'document',
-]
+];
 
 var commonPackages = [
     'fontspec',
-]
+];
 
 var
     matchingRules$3={
@@ -840,7 +847,7 @@ function text_border(s){
         )
     }
     function splitElementByNewlineCharacter(e){
-        return[...e.childNodes].map(node=>
+        return [...e.childNodes].map(node=>
             node.nodeType==Node.TEXT_NODE?
                 escape(node.wholeText)
             :
@@ -887,7 +894,7 @@ function Highlighted(lang,s){
     this.s=s;
 }
 Highlighted.prototype.toString=function(){
-    return`<span class=highlighted_${this.lang}>${
+    return `<span class=highlighted_${this.lang}>${
         languages[this.lang](this.s)
     }</span>`
 };
@@ -899,13 +906,13 @@ function highlight$1(k,s){
 }
 var highlight$2 = new Proxy(highlight$1,{get:(t,k)=>
     s=>new Highlighted(k,s)
-})
+});
 
 var main = {
     highlight: highlight$2,
     typeset: text_border,
     style,
-}
+};
 
 export default main;
-export { highlight$2 as highlight, text_border as typeset, style };
+export { highlight$2 as highlight, style, text_border as typeset };

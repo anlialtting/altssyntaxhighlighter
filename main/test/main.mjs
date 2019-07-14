@@ -1,6 +1,6 @@
-import doe from'../../lib/doe.mjs'
-import sh from '../main.mjs'
-//import sh from '../main.static.mjs'
+import doe from'../../lib/doe/main/doe.mjs'
+import sh from'../main.mjs'
+//import sh from'../main.static.mjs'
 let code=[{
     type:'cpp',
     code:`#include<stdio.h>

@@ -1,5 +1,5 @@
 import{escape}from'../../lib/cr.mjs'
-import doe from'../../lib/doe.mjs'
+import doe from'../../lib/doe/main/doe.mjs'
 function text_border(s){
     let
         countOfLines,
