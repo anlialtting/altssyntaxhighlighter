@@ -1,0 +1,3 @@
+[submodule "lib/doe"]
+	path = lib/doe
+	url = https://github.com/anliting/doe.git
