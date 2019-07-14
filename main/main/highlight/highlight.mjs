@@ -1,4 +1,4 @@
-import{escape}from'../../../lib/cr.mjs'
+import{escape}from'../../../lib/cr/main/cr.mjs'
 function highlight(list){
     return list.map(item=>{
         if(typeof item=='string')
